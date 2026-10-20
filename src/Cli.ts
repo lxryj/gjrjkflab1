@@ -1,0 +1,70 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { Editor } from "./Editor";
+import { CallbackCommand } from "./commands/CallbackCommand";
+import { Circle } from "./model/Circle";
+import { Ellipse } from "./model/Ellipse";
+import { Group } from "./model/Group";
+import { Line } from "./model/Line";
+import { Rect } from "./model/Rect";
+import { Shape } from "./model/Shape";
+import { SvgDocument } from "./model/SvgDocument";
+import { Text } from "./model/Text";
+
+export class Cli {
+  private readonly editor = new Editor();
+  private readonly commands = new Map<string, (args: string[]) => string>();
+  private filePath?: string;
+  constructor() {
+    this.commands.set("init", a => this.init(a)); this.commands.set("read", a => this.read(a)); this.commands.set("save", a => this.save(a)); this.commands.set("canvas", a => this.canvas(a));
+    this.commands.set("create", a => this.edit(() => this.create(a))); this.commands.set("delete", a => this.edit(() => this.delete(a))); this.commands.set("move", a => this.edit(() => this.move(a))); this.commands.set("scale", a => this.edit(() => this.scale(a))); this.commands.set("set", a => this.edit(() => this.set(a)));
+    this.commands.set("group", a => this.edit(() => this.group(a))); this.commands.set("ungroup", a => this.edit(() => this.ungroup(a))); this.commands.set("addto", a => this.edit(() => this.addto(a))); this.commands.set("front", a => this.edit(() => this.zorder(a,true))); this.commands.set("back", a => this.edit(() => this.zorder(a,false)));
+    this.commands.set("tree", a => this.tree(a)); this.commands.set("show", a => this.show(a)); this.commands.set("help", () => HELP);
+    this.commands.set("undo", () => this.editor.history.undo()); this.commands.set("redo", () => this.editor.history.redo());
+  }
+  runLine(line: string): string { const input = line.trim(); if (!input || input.startsWith("#")) return ""; try { const tokens = tokenize(input); const name = tokens.shift()!.toLowerCase(); const handler = this.commands.get(name); if (!handler) throw new Error(`unknown command: ${name}`); const result = handler(tokens); return result; } catch (e) { return `error: ${e instanceof Error ? e.message : String(e)}`; } }
+  private edit(action: () => string): string { const command = new CallbackCommand(this.editor, action); return this.editor.history.execute(command); }
+  private init(a: string[]): string { const w = a.length ? positive(a[0], "width") : 800, h = a.length > 1 ? positive(a[1], "height") : 600; if (a.length > 2) throw new Error("usage: init [w] [h]"); this.editor.document = new SvgDocument(w,h); this.editor.history.documentOperation(); this.filePath = undefined; return `canvas ${w}x${h} created`; }
+  private read(a: string[]): string { if (a.length !== 1) throw new Error("usage: read <file.svg>"); const path = resolve(a[0]); let parsed: SvgDocument; try { parsed = SvgDocument.fromSvg(readFileSync(path,"utf8")); } catch { throw new Error(`cannot read file: ${a[0]}`); } this.editor.document = parsed; this.editor.history.documentOperation(); this.filePath = path; return [...parsed.warnings,`read ${a[0]} (${parsed.all().length} elements)`].join("\n"); }
+  private save(a: string[]): string { if (a.length > 1) throw new Error("usage: save [file.svg]"); const doc = this.editor.requireDocument(); const file = a[0] ? resolve(a[0]) : this.filePath; if (!file) throw new Error("usage: save <file.svg> (no previous read path)"); try { writeFileSync(file,doc.toSvg(),"utf8"); } catch { throw new Error(`cannot write file: ${a[0] ?? file}`); } this.editor.history.documentOperation(); this.filePath = file; return `saved to ${a[0] ?? file} (${doc.all().length} elements)`; }
+  private canvas(a: string[]): string { const d = this.editor.requireDocument(); if (!a.length) return `canvas ${d.width}x${d.height}`; if (a.length !== 2) throw new Error("usage: canvas [w] [h]"); d.width = positive(a[0],"width"); d.height = positive(a[1],"height"); this.editor.history.documentOperation(); return `canvas set to ${d.width}x${d.height}`; }
+  private create(a: string[]): string {
+    if (a.length < 2) throw new Error("usage: create <type> <id> [params...] [in <containerId>]");
+    const type = a[0], id = a[1]; const inAt = a.length >= 2 && a[a.length-2] === "in" ? a.length-2 : -1; const parentId = inAt >= 0 ? a[inAt+1] : undefined; const p = inAt >= 0 ? a.slice(2,inAt) : a.slice(2);
+    const d = this.editor.requireDocument(); if (d.find(id)) throw new Error(`id already exists: ${id}`);
+    let shape: Shape;
+    switch(type) {
+      case "rect": if(p.length<4||p.length>5) throw new Error("usage: create rect <id> <x> <y> <w> <h> [fill]"); shape=new Rect(id,n(p[0]),n(p[1]),n(p[2]),n(p[3]),p[4]); break;
+      case "circle": if(p.length<3||p.length>4) throw new Error("usage: create circle <id> <cx> <cy> <r> [fill]"); shape=new Circle(id,n(p[0]),n(p[1]),n(p[2]),p[3]); break;
+      case "ellipse": if(p.length<4||p.length>5) throw new Error("usage: create ellipse <id> <cx> <cy> <rx> <ry> [fill]"); shape=new Ellipse(id,n(p[0]),n(p[1]),n(p[2]),n(p[3]),p[4]); break;
+      case "line": if(p.length<4||p.length>5) throw new Error("usage: create line <id> <x1> <y1> <x2> <y2> [stroke]"); shape=new Line(id,n(p[0]),n(p[1]),n(p[2]),n(p[3]),p[4]); break;
+      case "text": if(p.length!==3) throw new Error("usage: create text <id> <x> <y> \"content\""); shape=new Text(id,n(p[0]),n(p[1]),p[2]); break;
+      case "g": if(p.length) throw new Error("usage: create g <id>"); shape=new Group(id); break;
+      default: throw new Error(`unknown shape type: ${type} (is the plugin loaded?)`);
+    }
+    let parent: Group = d.root; if(parentId){ const target=d.find(parentId); if(!target) throw new Error(`no such container: ${parentId}`); if(!target.isContainer()) throw new Error(`not a container: ${parentId}`); parent=target; }
+    d.attach(shape,parent); return `${type}#${id} created${parentId?` in g#${parentId}`:""}`;
+  }
+  private delete(a:string[]):string { if(a.length!==1) throw new Error("usage: delete <id>"); const d=this.editor.requireDocument(), s=d.require(a[0]); (s.parent as Group).remove(s); d.unregisterTree(s); return `${s.type}#${s.id} deleted`; }
+  private move(a:string[]):string { if(a.length!==3) throw new Error("usage: move <id> <dx> <dy>"); const s=this.editor.requireDocument().require(a[0]),dx=n(a[1]),dy=n(a[2]); s.move(dx,dy); return `${s.type}#${s.id} moved by (${dx},${dy})`; }
+  private scale(a:string[]):string { if(a.length!==2) throw new Error("usage: scale <id> <factor>"); const f=n(a[1]); if(f<=0) throw new Error("scale factor must be positive"); const s=this.editor.requireDocument().require(a[0]); s.scale(f); return `${s.type}#${s.id} scaled by ${f}`; }
+  private set(a:string[]):string {
+    if(a.length<3) throw new Error("usage: set <id> <attr> <value>"); const d=this.editor.requireDocument(),s=d.require(a[0]),key=a[1],value=a.slice(2).join(" ");
+    const geometry:Record<string,string[]>={rect:["x","y","width","height"],circle:["cx","cy","r"],ellipse:["cx","cy","rx","ry"],line:["x1","y1","x2","y2"],text:["x","y"]};
+    if(key==="fill"||key==="stroke"||key==="stroke-width"){s.setAttribute(key,value);return `${s.type}#${s.id} updated: ${key}=${value}`;}
+    if(s instanceof Text && key==="text"){s.content=value;return `text#${s.id} updated: text=${JSON.stringify(value)}`;}
+    if(!geometry[s.type]?.includes(key)) throw new Error(`unknown attribute: ${key}`); const v=n(value); (s as any)[key]=v; return `${s.type}#${s.id} updated: ${key}=${v}`;
+  }
+  private group(a:string[]):string { if(a.length<3) throw new Error("usage: group <newGid> <id1> <id2>..."); const d=this.editor.requireDocument(); if(d.find(a[0])) throw new Error(`id already exists: ${a[0]}`); const shapes=a.slice(1).map(id=>d.require(id)); if(new Set(shapes).size!==shapes.length) throw new Error("duplicate group target"); for(const s of shapes) if(s.isContainer()&&shapes.some(x=>x!==s&&isDescendant(s,x))) throw new Error(`cannot group a container into its own descendant: ${s.id}`); const locations=shapes.map(s=>({s,parent:s.parent as Group,index:(s.parent as Group).children.indexOf(s)})); const parents=new Set(locations.map(x=>x.parent)); if(parents.size!==1) throw new Error("group targets must have the same parent"); const parent=locations[0].parent, at=Math.min(...locations.map(x=>x.index)); const g=new Group(a[0]); for(const x of locations.sort((u,v)=>u.index-v.index)) x.parent.remove(x.s); d.attach(g,parent,at); for(const x of locations) g.insert(x.s); return `g#${g.id} created with ${shapes.length} children`; }
+  private ungroup(a:string[]):string { if(a.length!==1) throw new Error("usage: ungroup <gid>"); const d=this.editor.requireDocument(),g=d.require(a[0]); if(!g.isContainer()) throw new Error(`not a container: ${g.id}`); if(g.parent===d.root) throw new Error(`cannot ungroup top-level container: ${g.id}`); const parent=g.parent as Group; let at=parent.children.indexOf(g); parent.remove(g); d.unregister(g); for(const child of [...g.children]) { g.remove(child); parent.insert(child,at++); } return `g#${g.id} ungrouped`; }
+  private addto(a:string[]):string { if(a.length!==2) throw new Error("usage: addto <gid> <id>"); const d=this.editor.requireDocument(),target=d.require(a[0]),s=d.require(a[1]); if(!target.isContainer()) throw new Error(`not a container: ${target.id}`); if(target===s||isDescendant(target,s)) throw new Error(`cannot move container into its own descendant: ${target.id}`); (s.parent as Group).remove(s); target.insert(s); return `${s.type}#${s.id} moved into g#${target.id}`; }
+  private zorder(a:string[],front:boolean):string { if(a.length!==1) throw new Error(`usage: ${front?"front":"back"} <id>`); const s=this.editor.requireDocument().require(a[0]),p=s.parent as Group; p.remove(s); p.insert(s,front?p.children.length:0); return `${s.type}#${s.id} moved to ${front?"front":"back"}`; }
+  private tree(a:string[]):string { const d=this.editor.requireDocument(); if(a.length>1) throw new Error("usage: tree [id]"); if(!a.length)return [`svg (${d.width}x${d.height})`,...d.root.children.map((s,i)=>draw(s,"",i===d.root.children.length-1))].join("\n"); return draw(d.require(a[0]),"",true); }
+  private show(a:string[]):string { if(a.length!==1) throw new Error("usage: show <id>"); const s=this.editor.requireDocument().require(a[0]); const parent=s.parent?.id==="__svg_root__"?"svg":`${s.parent?.type}#${s.parent?.id}`; return [`${s.type}#${s.id}  parent=${parent}`,`  ${s.geometry()}`,...Object.entries(s.attributes).map(([k,v])=>`  ${k}=${v}`)].join("\n"); }
+}
+function n(s:string):number { const x=Number(s); if(!Number.isFinite(x)) throw new Error(`invalid number: ${s}`); return x; }
+function positive(s:string,label:string):number { const x=n(s); if(x<=0) throw new Error(`${label} must be positive`); return x; }
+function isDescendant(parent:Shape,candidate:Shape):boolean { for(let p=candidate.parent;p;p=p.parent)if(p===parent)return true;return false; }
+function draw(s:Shape,prefix:string,last:boolean):string { const line=`${prefix}${last?"└── ":"├── "}${s.type}#${s.id}${s.geometry()?`  ${s.geometry()}`:""}${s instanceof Group&&s.attributes["data-kind"]?` (${s.attributes["data-kind"]})`:""}`; return s.isContainer()? [line,...s.children.map((c,i)=>draw(c,prefix+(last?"    ":"│   "),i===s.children.length-1))].join("\n"):line; }
+function tokenize(line:string):string[] { const out:string[]=[]; let token="",quoted=false,active=false; for(let i=0;i<line.length;i++){ const c=line[i]; if(c==='"'){quoted=!quoted;active=true;} else if(/\s/.test(c)&&!quoted){if(active){out.push(token);token="";active=false;}} else {token+=c;active=true;} } if(quoted)throw new Error("unterminated quoted string");if(active)out.push(token);return out; }
+const HELP=`Commands: init [w] [h], read <file.svg>, save [file.svg], canvas [w] [h], create <type> <id> [params...] [in <containerId>], delete <id>, move <id> <dx> <dy>, scale <id> <factor>, set <id> <attr> <value>, group <newGid> <id...>, ungroup <gid>, addto <gid> <id>, front/back <id>, tree [id], show <id>, undo, redo, help`;
