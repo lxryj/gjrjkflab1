@@ -1,4 +1,5 @@
 import { Shape } from "./Shape";
+/** 线段：用两端点表示；可选颜色写入 stroke，而非 fill。 */
 export class Line extends Shape {
   readonly type = "line" as const;
   constructor(id: string, public x1: number, public y1: number, public x2: number, public y2: number, stroke?: string) { super(id); if (stroke !== undefined) this.attributes.stroke = stroke; }

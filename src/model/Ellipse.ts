@@ -1,4 +1,5 @@
 import { Shape } from "./Shape";
+/** 椭圆：cx/cy 为中心，rx/ry 分别为水平和垂直半径。 */
 export class Ellipse extends Shape {
   readonly type = "ellipse" as const;
   constructor(id: string, public cx: number, public cy: number, public rx: number, public ry: number, fill?: string) { super(id); if (fill !== undefined) this.attributes.fill = fill; }
