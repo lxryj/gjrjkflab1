@@ -79,3 +79,7 @@ Cli --> SvgDocument
 ## 质量保证手段
 
 `npm test` 执行 TypeScript 严格类型构建；命令行可用 `npm run cli` 启动。第一版已通过严格构建，并回放 init/create/in、容器移动、文本属性修改、group/undo、根级 ungroup 拒绝、未知 box 类型、read/save round-trip 和 IO 后 undo 拒绝等典型会话。`git diff --check` 通过。当前未建立自动化集成测试；后续应补测缺失 id 自动分配、跨父级分组拒绝及更多外部 SVG 格式。
+
+## CLI 交互提示
+
+启动时显示快速开始流程；`help` 提供分类命令总览，`help <command>` 提供对应语法和示例。空画布的 `tree` 会建议创建图形，未初始化文档或参数格式错误时会给出下一步提示，帮助用户逐步回放常见功能。
