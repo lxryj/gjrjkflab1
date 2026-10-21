@@ -1,0 +1,3 @@
+2026-10-21 18:17:35 +08:00
+Command: node <typescript>/bin/tsc -p tsconfig.json
+Exit code: 0

@@ -1,0 +1,14 @@
+init
+create rect r1 10 20 100 50 red
+create rect r1 0 0 1 1
+move missing 1 2
+create g child in missing
+create g child in r1
+scale r1 0
+set r1 unsupported 1
+create box later 0 0 10 10 "later"
+move r1 NaN 0
+create text broken 0 0 "unfinished
+show r1
+undo
+tree

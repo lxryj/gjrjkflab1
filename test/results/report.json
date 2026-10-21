@@ -1,0 +1,2628 @@
+{
+  "startedAt": "2026-10-21 18:17:35 +08:00",
+  "finishedAt": "2026-10-21 18:17:35 +08:00",
+  "environment": {
+    "node": "v24.16.0",
+    "platform": "win32",
+    "arch": "x64",
+    "typescript": "7.0.2",
+    "fastXmlParser": "5.11.2"
+  },
+  "gitHead": "5c02f0d807df3d8ce33aa0cecbd136ac7dc8dfa0",
+  "sourceHashes": {
+    "src/Cli.ts": "a08897983486beb3df91b30bd90d8afaf1bafdee3e0a0bdc78033cf04b0e9265",
+    "src/commands/CallbackCommand.ts": "5ab48056dd1db5a80d241a92b9a5e677e68e3c065f0e691cd27b77282d79a25a",
+    "src/commands/Command.ts": "d5997377093376dce6725bca417bb71bfc3c52473ab040c24d678eb4534eb033",
+    "src/commands/CommandManager.ts": "99b67fab0a493724d50ced0de064b4d356e0ae03dcd71dbb4ebf1e3c95511a7c",
+    "src/Editor.ts": "f921400e5182b9257537c41a64f790bd5a9c2bbc532813736ddbb1d057cd15b4",
+    "src/index.ts": "f0742d51799f70b599bcd49b780b3a5cfb29805d14544b353b809119244df325",
+    "src/model/Circle.ts": "9963d8dcf13cd4804b0b60c53f1985c5091e91aeeb7eb9b6d454096b95a08a2e",
+    "src/model/Ellipse.ts": "7ac2bc33e14c0c4d46c32c8a47ab4cd120fa1fb5591493a9455944a61ccd28d4",
+    "src/model/Group.ts": "dbaea73e7123a563353ca8b8844e760c3697ea99ef4dcd69022599e3c31f1ccc",
+    "src/model/Line.ts": "f11a29f2a59003c8705587f697ead2ef2339efcd84f02c9b77e11a283cac92d6",
+    "src/model/Rect.ts": "fcf35f51d75c4da9881aa0c6c45b4b7790bbae8bdfaf97e3a6ef79239efa67ee",
+    "src/model/Shape.ts": "e761e752eeb71cc10a605b633410da9ab888039e7a4ffa95d6cf87243e527ef2",
+    "src/model/SvgDocument.ts": "b737768350395a3df379a6bddb8f4adac995727a72364fe085510ef2512387e6",
+    "src/model/Text.ts": "22a94c93850c397d85c55a8608b6821496b988694be099d95513360bb8f0fd9b"
+  },
+  "build": {
+    "status": "pass",
+    "exitCode": 0,
+    "output": ""
+  },
+  "cases": [
+    {
+      "id": "D01",
+      "name": "未初始化文档时拒绝操作并给出引导",
+      "requirement": "2 通用约定；3 文档类",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "tree",
+          "output": "error: no document. use 'init' or 'read' first\n  Hint: start with 'init 800 600' or open a file with 'read <file.svg>'."
+        },
+        {
+          "command": "create g root",
+          "output": "error: no document. use 'init' or 'read' first\n  Hint: start with 'init 800 600' or open a file with 'read <file.svg>'."
+        },
+        {
+          "command": "help",
+          "output": "SVG 编辑器命令指南\n\n快速开始：\n  init                         新建默认 800x600 画布\n  create rect r1 20 20 120 60 steelblue\n  tree                         查看图形结构\n  save drawing.svg             保存 SVG，可用浏览器打开预览\n\n常用命令：\n  文档：init [w] [h] | read <file.svg> | save [file.svg] | canvas [w] [h]\n  创建：create rect|circle|ellipse|line|text|g <id> ... [in <containerId>]\n  编辑：move <id> <dx> <dy> | scale <id> <factor> | set <id> <attr> <value> | delete <id>\n  组合：group <newGid> <id1> <id2>... | ungroup <gid> | addto <gid> <id> | front/back <id>\n  查看：tree [id] | show <id> | help [command]\n  历史：undo | redo\n\n文字内容请用双引号包裹；命令行也支持 # 开头的注释行。\n输入 'help <command>' 查看该命令的参数和示例。"
+        }
+      ],
+      "durationMs": 0.74
+    },
+    {
+      "id": "D02",
+      "name": "默认画布与自定义浮点尺寸",
+      "requirement": "3 init/canvas",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "canvas",
+          "output": "canvas 800x600"
+        },
+        {
+          "command": "init 320.5 240.25",
+          "output": "canvas 320.5x240.25 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "canvas",
+          "output": "canvas 320.5x240.25"
+        },
+        {
+          "command": "canvas 1024 768",
+          "output": "canvas set to 1024x768"
+        },
+        {
+          "command": "canvas",
+          "output": "canvas 1024x768"
+        }
+      ],
+      "durationMs": 0.42
+    },
+    {
+      "id": "D03",
+      "name": "空行、注释、含空格及中文文本",
+      "requirement": "2 REPL 与带空格参数",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "",
+          "output": ""
+        },
+        {
+          "command": "   # comment",
+          "output": ""
+        },
+        {
+          "command": "create text title 10.5 -20.25 \"开始 Hello SVG\"",
+          "output": "text#title created"
+        },
+        {
+          "command": "show title",
+          "output": "text#title  parent=svg\n  (10.5,-20.25) \"开始 Hello SVG\""
+        },
+        {
+          "command": "set title text \"\"",
+          "output": "text#title updated: text=\"\""
+        },
+        {
+          "command": "show title",
+          "output": "text#title  parent=svg\n  (10.5,-20.25) \"\""
+        }
+      ],
+      "durationMs": 0.56
+    },
+    {
+      "id": "D04",
+      "name": "命令帮助及未知命令反馈",
+      "requirement": "3 help；交互提示",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "help init",
+          "output": "init [w] [h]\n新建画布；默认尺寸为 800x600。\n示例：init 800 600"
+        },
+        {
+          "command": "help read",
+          "output": "read <file.svg>\n读取 SVG 为当前文档；没有 id 的图形会自动补 id 并提示。\n示例：read drawing.svg"
+        },
+        {
+          "command": "help save",
+          "output": "save [file.svg]\n保存当前文档；省略路径时沿用上次 read/save 的路径。\n示例：save drawing.svg"
+        },
+        {
+          "command": "help canvas",
+          "output": "canvas [w] [h]\n查看尺寸，或修改画布尺寸。\n示例：canvas 1024 768"
+        },
+        {
+          "command": "help create",
+          "output": "create <type> <id> [parameters...] [in <containerId>]\n类型：rect x y w h [fill] | circle cx cy r [fill] | ellipse cx cy rx ry [fill] | line x1 y1 x2 y2 [stroke] | text x y \"content\" | g\n示例：create rect card 20 30 160 60 orange in panel"
+        },
+        {
+          "command": "help delete",
+          "output": "delete <id>\n删除图形；删除容器会连同其后代一起删除。\n示例：delete card"
+        },
+        {
+          "command": "help move",
+          "output": "move <id> <dx> <dy>\n按增量移动图形或整个容器。\n示例：move card 20 -5"
+        },
+        {
+          "command": "help scale",
+          "output": "scale <id> <factor>\n按画布原点缩放位置与尺寸，factor 必须大于 0。\n示例：scale card 1.5"
+        },
+        {
+          "command": "help set",
+          "output": "set <id> <attr> <value>\n设置样式、几何白名单属性或 text 的 text 内容。\n示例：set card fill tomato\n示例：set title text \"Hello SVG\""
+        },
+        {
+          "command": "help group",
+          "output": "group <newGid> <id1> <id2>...\n把同一父容器下已有图形按原顺序收编。\n示例：group cluster card title"
+        },
+        {
+          "command": "help ungroup",
+          "output": "ungroup <gid>\n解散非根级容器，并将子图形提升到原位置。\n示例：ungroup cluster"
+        },
+        {
+          "command": "help addto",
+          "output": "addto <gid> <id>\n把已有图形移入容器。\n示例：addto panel card"
+        },
+        {
+          "command": "help front",
+          "output": "front <id>\n将图形放到同级绘制顺序的最前面。\n示例：front card"
+        },
+        {
+          "command": "help back",
+          "output": "back <id>\n将图形放到同级绘制顺序的最后面。\n示例：back card"
+        },
+        {
+          "command": "help tree",
+          "output": "tree [id]\n显示文档结构和关键几何属性；可传 id 查看子树。\n示例：tree panel"
+        },
+        {
+          "command": "help show",
+          "output": "show <id>\n显示图形的父容器、几何信息和样式属性。\n示例：show card"
+        },
+        {
+          "command": "help undo",
+          "output": "undo\n撤销最近一次编辑；init/read/save/canvas 后历史会锁定，直到下一次编辑。"
+        },
+        {
+          "command": "help redo",
+          "output": "redo\n重做最近撤销的编辑；撤销后执行新编辑会清空 redo 历史。"
+        },
+        {
+          "command": "help help",
+          "output": "help [command]\n显示命令总览或指定命令的语法示例。\n示例：help create"
+        },
+        {
+          "command": "unknown-command",
+          "output": "error: unknown command: unknown-command. Type 'help' to list available commands."
+        },
+        {
+          "command": "help unknown-command",
+          "output": "error: unknown command: unknown-command. Type 'help' to list available commands."
+        }
+      ],
+      "durationMs": 0.36
+    },
+    {
+      "id": "S01",
+      "name": "rect 的创建、属性、移动与缩放",
+      "requirement": "4.1 create；3 move/scale",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 10 20 red",
+          "output": "rect#r created"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=1 y=2 w=10 h=20\n  fill=red"
+        },
+        {
+          "command": "move r 2 -2",
+          "output": "rect#r moved by (2,-2)"
+        },
+        {
+          "command": "scale r 2",
+          "output": "rect#r scaled by 2"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=6 y=0 w=20 h=40\n  fill=red"
+        }
+      ],
+      "durationMs": 0.49
+    },
+    {
+      "id": "S02",
+      "name": "circle 的创建、属性、移动与缩放",
+      "requirement": "4.1 create；3 move/scale",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create circle c 3 4 5 blue",
+          "output": "circle#c created"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=svg\n  cx=3 cy=4 r=5\n  fill=blue"
+        },
+        {
+          "command": "move c 2 -2",
+          "output": "circle#c moved by (2,-2)"
+        },
+        {
+          "command": "scale c 2",
+          "output": "circle#c scaled by 2"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=svg\n  cx=10 cy=4 r=10\n  fill=blue"
+        }
+      ],
+      "durationMs": 0.36
+    },
+    {
+      "id": "S03",
+      "name": "ellipse 的创建、属性、移动与缩放",
+      "requirement": "4.1 create；3 move/scale",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create ellipse e 5 6 7 8 green",
+          "output": "ellipse#e created"
+        },
+        {
+          "command": "show e",
+          "output": "ellipse#e  parent=svg\n  cx=5 cy=6 rx=7 ry=8\n  fill=green"
+        },
+        {
+          "command": "move e 2 -2",
+          "output": "ellipse#e moved by (2,-2)"
+        },
+        {
+          "command": "scale e 2",
+          "output": "ellipse#e scaled by 2"
+        },
+        {
+          "command": "show e",
+          "output": "ellipse#e  parent=svg\n  cx=14 cy=8 rx=14 ry=16\n  fill=green"
+        }
+      ],
+      "durationMs": 0.3
+    },
+    {
+      "id": "S04",
+      "name": "line 的创建、属性、移动与缩放",
+      "requirement": "4.1 create；3 move/scale",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create line l 1 2 9 10 black",
+          "output": "line#l created"
+        },
+        {
+          "command": "show l",
+          "output": "line#l  parent=svg\n  (1,2) -> (9,10)\n  stroke=black"
+        },
+        {
+          "command": "move l 2 -2",
+          "output": "line#l moved by (2,-2)"
+        },
+        {
+          "command": "scale l 2",
+          "output": "line#l scaled by 2"
+        },
+        {
+          "command": "show l",
+          "output": "line#l  parent=svg\n  (6,0) -> (22,16)\n  stroke=black"
+        }
+      ],
+      "durationMs": 0.29
+    },
+    {
+      "id": "S05",
+      "name": "text 的创建、属性、移动与缩放",
+      "requirement": "4.1 create；3 move/scale",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create text t 1.5 2.5 \"开始 Hello\"",
+          "output": "text#t created"
+        },
+        {
+          "command": "show t",
+          "output": "text#t  parent=svg\n  (1.5,2.5) \"开始 Hello\""
+        },
+        {
+          "command": "move t 2 -2",
+          "output": "text#t moved by (2,-2)"
+        },
+        {
+          "command": "scale t 2",
+          "output": "text#t scaled by 2"
+        },
+        {
+          "command": "show t",
+          "output": "text#t  parent=svg\n  (7,1) \"开始 Hello\""
+        }
+      ],
+      "durationMs": 0.28
+    },
+    {
+      "id": "S06",
+      "name": "g 的创建、属性、移动与缩放",
+      "requirement": "4.1 create；3 move/scale",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g g1",
+          "output": "g#g1 created"
+        },
+        {
+          "command": "show g1",
+          "output": "g#g1  parent=svg\n  "
+        },
+        {
+          "command": "move g1 2 -2",
+          "output": "g#g1 moved by (2,-2)"
+        },
+        {
+          "command": "scale g1 2",
+          "output": "g#g1 scaled by 2"
+        },
+        {
+          "command": "show g1",
+          "output": "g#g1  parent=svg\n  "
+        }
+      ],
+      "durationMs": 0.26
+    },
+    {
+      "id": "S07",
+      "name": "所有类型支持 in 并显示正确父容器",
+      "requirement": "4.1 in 子句",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g parent",
+          "output": "g#parent created"
+        },
+        {
+          "command": "create rect r 1 2 10 20 red in parent",
+          "output": "rect#r created in g#parent"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=g#parent\n  x=1 y=2 w=10 h=20\n  fill=red"
+        },
+        {
+          "command": "create circle c 3 4 5 blue in parent",
+          "output": "circle#c created in g#parent"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=g#parent\n  cx=3 cy=4 r=5\n  fill=blue"
+        },
+        {
+          "command": "create ellipse e 5 6 7 8 green in parent",
+          "output": "ellipse#e created in g#parent"
+        },
+        {
+          "command": "show e",
+          "output": "ellipse#e  parent=g#parent\n  cx=5 cy=6 rx=7 ry=8\n  fill=green"
+        },
+        {
+          "command": "create line l 1 2 9 10 black in parent",
+          "output": "line#l created in g#parent"
+        },
+        {
+          "command": "show l",
+          "output": "line#l  parent=g#parent\n  (1,2) -> (9,10)\n  stroke=black"
+        },
+        {
+          "command": "create text t 1.5 2.5 \"开始 Hello\" in parent",
+          "output": "text#t created in g#parent"
+        },
+        {
+          "command": "show t",
+          "output": "text#t  parent=g#parent\n  (1.5,2.5) \"开始 Hello\""
+        },
+        {
+          "command": "create g g1 in parent",
+          "output": "g#g1 created in g#parent"
+        },
+        {
+          "command": "show g1",
+          "output": "g#g1  parent=g#parent\n  "
+        }
+      ],
+      "durationMs": 0.36
+    },
+    {
+      "id": "S08",
+      "name": "省略颜色时沿用 SVG 默认样式",
+      "requirement": "4.1 fill/stroke 省略语义",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 0 0 10 20",
+          "output": "rect#r created"
+        },
+        {
+          "command": "create line l 0 0 10 20",
+          "output": "line#l created"
+        },
+        {
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-mxzZTW\\export.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-mxzZTW\\export.svg (2 elements)"
+        },
+        {
+          "label": "file: export.svg",
+          "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"600\" viewBox=\"0 0 800 600\">\n  <rect id=\"r\" x=\"0\" y=\"0\" width=\"10\" height=\"20\"/>\n  <line id=\"l\" x1=\"0\" y1=\"0\" x2=\"10\" y2=\"20\"/>\n</svg>\n"
+        }
+      ],
+      "durationMs": 3.23
+    },
+    {
+      "id": "S09",
+      "name": "id 区分大小写且重复 id 失败不入历史",
+      "requirement": "2 id 约定；4.2 重复 id",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g Box",
+          "output": "g#Box created"
+        },
+        {
+          "command": "create g box",
+          "output": "g#box created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#Box\n└── g#box"
+        },
+        {
+          "command": "create g Box",
+          "output": "error: id already exists: Box"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#Box\n└── g#box"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "show box",
+          "output": "error: no such shape: box"
+        },
+        {
+          "command": "show Box",
+          "output": "g#Box  parent=svg\n  "
+        }
+      ],
+      "durationMs": 0.43
+    },
+    {
+      "id": "S10",
+      "name": "修改几何白名单、样式及文本内容",
+      "requirement": "4.1 set 白名单",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 10 20 red",
+          "output": "rect#r created"
+        },
+        {
+          "command": "create circle c 3 4 5 blue",
+          "output": "circle#c created"
+        },
+        {
+          "command": "create ellipse e 5 6 7 8 green",
+          "output": "ellipse#e created"
+        },
+        {
+          "command": "create line l 1 2 9 10 black",
+          "output": "line#l created"
+        },
+        {
+          "command": "create text t 1.5 2.5 \"开始 Hello\"",
+          "output": "text#t created"
+        },
+        {
+          "command": "create g g1",
+          "output": "g#g1 created"
+        },
+        {
+          "command": "set r x 12.5",
+          "output": "rect#r updated: x=12.5"
+        },
+        {
+          "command": "set r y 12.5",
+          "output": "rect#r updated: y=12.5"
+        },
+        {
+          "command": "set r width 12.5",
+          "output": "rect#r updated: width=12.5"
+        },
+        {
+          "command": "set r height 12.5",
+          "output": "rect#r updated: height=12.5"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=12.5 y=12.5 w=12.5 h=12.5\n  fill=red"
+        },
+        {
+          "command": "set c cx 12.5",
+          "output": "circle#c updated: cx=12.5"
+        },
+        {
+          "command": "set c cy 12.5",
+          "output": "circle#c updated: cy=12.5"
+        },
+        {
+          "command": "set c r 12.5",
+          "output": "circle#c updated: r=12.5"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=svg\n  cx=12.5 cy=12.5 r=12.5\n  fill=blue"
+        },
+        {
+          "command": "set e cx 12.5",
+          "output": "ellipse#e updated: cx=12.5"
+        },
+        {
+          "command": "set e cy 12.5",
+          "output": "ellipse#e updated: cy=12.5"
+        },
+        {
+          "command": "set e rx 12.5",
+          "output": "ellipse#e updated: rx=12.5"
+        },
+        {
+          "command": "set e ry 12.5",
+          "output": "ellipse#e updated: ry=12.5"
+        },
+        {
+          "command": "show e",
+          "output": "ellipse#e  parent=svg\n  cx=12.5 cy=12.5 rx=12.5 ry=12.5\n  fill=green"
+        },
+        {
+          "command": "set l x1 12.5",
+          "output": "line#l updated: x1=12.5"
+        },
+        {
+          "command": "set l y1 12.5",
+          "output": "line#l updated: y1=12.5"
+        },
+        {
+          "command": "set l x2 12.5",
+          "output": "line#l updated: x2=12.5"
+        },
+        {
+          "command": "set l y2 12.5",
+          "output": "line#l updated: y2=12.5"
+        },
+        {
+          "command": "show l",
+          "output": "line#l  parent=svg\n  (12.5,12.5) -> (12.5,12.5)\n  stroke=black"
+        },
+        {
+          "command": "set t x 12.5",
+          "output": "text#t updated: x=12.5"
+        },
+        {
+          "command": "set t y 12.5",
+          "output": "text#t updated: y=12.5"
+        },
+        {
+          "command": "show t",
+          "output": "text#t  parent=svg\n  (12.5,12.5) \"开始 Hello\""
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=12.5 y=12.5 w=12.5 h=12.5\n  fill=red"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=svg\n  cx=12.5 cy=12.5 r=12.5\n  fill=blue"
+        },
+        {
+          "command": "show e",
+          "output": "ellipse#e  parent=svg\n  cx=12.5 cy=12.5 rx=12.5 ry=12.5\n  fill=green"
+        },
+        {
+          "command": "show l",
+          "output": "line#l  parent=svg\n  (12.5,12.5) -> (12.5,12.5)\n  stroke=black"
+        },
+        {
+          "command": "set r fill #abcdef",
+          "output": "rect#r updated: fill=#abcdef"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=12.5 y=12.5 w=12.5 h=12.5\n  fill=#abcdef"
+        },
+        {
+          "command": "set g1 fill #abcdef",
+          "output": "g#g1 updated: fill=#abcdef"
+        },
+        {
+          "command": "show g1",
+          "output": "g#g1  parent=svg\n  \n  fill=#abcdef"
+        },
+        {
+          "command": "set r stroke black",
+          "output": "rect#r updated: stroke=black"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=12.5 y=12.5 w=12.5 h=12.5\n  fill=#abcdef\n  stroke=black"
+        },
+        {
+          "command": "set g1 stroke black",
+          "output": "g#g1 updated: stroke=black"
+        },
+        {
+          "command": "show g1",
+          "output": "g#g1  parent=svg\n  \n  fill=#abcdef\n  stroke=black"
+        },
+        {
+          "command": "set r stroke-width 2.5",
+          "output": "rect#r updated: stroke-width=2.5"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=12.5 y=12.5 w=12.5 h=12.5\n  fill=#abcdef\n  stroke=black\n  stroke-width=2.5"
+        },
+        {
+          "command": "set g1 stroke-width 2.5",
+          "output": "g#g1 updated: stroke-width=2.5"
+        },
+        {
+          "command": "show g1",
+          "output": "g#g1  parent=svg\n  \n  fill=#abcdef\n  stroke=black\n  stroke-width=2.5"
+        },
+        {
+          "command": "set t text \"新标题 v2\"",
+          "output": "text#t updated: text=\"新标题 v2\""
+        },
+        {
+          "command": "show t",
+          "output": "text#t  parent=svg\n  (12.5,12.5) \"新标题 v2\""
+        }
+      ],
+      "durationMs": 0.87
+    },
+    {
+      "id": "S11",
+      "name": "不存在 id、非法属性、无效数字等失败不改文档",
+      "requirement": "2 失败无状态变更；4.2 错误约定",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4 red",
+          "output": "rect#r created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "delete absent",
+          "output": "error: no such shape: absent"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "move r NaN 0",
+          "output": "error: invalid number: NaN"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "scale r 0",
+          "output": "error: scale factor must be positive"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "scale r -1",
+          "output": "error: scale factor must be positive"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "set r font-size 10",
+          "output": "error: unknown attribute: font-size"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "set r x bad",
+          "output": "error: invalid number: bad"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "create g child in absent",
+          "output": "error: no such container: absent"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "create g child in r",
+          "output": "error: not a container: r"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "create box b 0 0 1 1 \"box\"",
+          "output": "error: unknown shape type: box (is the plugin loaded?)"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "create text bad 0 0 \"unfinished",
+          "output": "error: unterminated quoted string"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        }
+      ],
+      "durationMs": 0.52
+    },
+    {
+      "id": "S12",
+      "name": "创建时必须提供非空 id",
+      "requirement": "2 create/group 显式 id",
+      "issue": "Q9",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n(empty canvas; try 'create rect r1 20 20 120 60 steelblue')"
+        },
+        {
+          "command": "create g \"\"",
+          "output": "g# created"
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "空字符串不能作为有效 id",
+        "stack": "AssertionError [ERR_ASSERTION]: 空字符串不能作为有效 id\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:136:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": "g# created",
+        "expected": {},
+        "operator": "match"
+      },
+      "durationMs": 0.65
+    },
+    {
+      "id": "G01",
+      "name": "嵌套容器递归移动、缩放所有后代",
+      "requirement": "2.1 Composite；3 move/scale",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g outer",
+          "output": "g#outer created"
+        },
+        {
+          "command": "create g inner in outer",
+          "output": "g#inner created in g#outer"
+        },
+        {
+          "command": "create rect r 1 2 3 4 in inner",
+          "output": "rect#r created in g#inner"
+        },
+        {
+          "command": "create text t 5 6 \"label\" in outer",
+          "output": "text#t created in g#outer"
+        },
+        {
+          "command": "move outer 10 -1",
+          "output": "g#outer moved by (10,-1)"
+        },
+        {
+          "command": "scale outer 2",
+          "output": "g#outer scaled by 2"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=g#inner\n  x=22 y=2 w=6 h=8"
+        },
+        {
+          "command": "show t",
+          "output": "text#t  parent=g#outer\n  (30,10) \"label\""
+        },
+        {
+          "command": "show inner",
+          "output": "g#inner  parent=g#outer\n  "
+        }
+      ],
+      "durationMs": 0.37
+    },
+    {
+      "id": "G02",
+      "name": "分组按原同级顺序且整体 undo/redo",
+      "requirement": "3 group；4.3 一个 undo 单元",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect a 0 0 1 1",
+          "output": "rect#a created"
+        },
+        {
+          "command": "create circle b 0 0 1",
+          "output": "circle#b created"
+        },
+        {
+          "command": "create text c 0 0 \"c\"",
+          "output": "text#c created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── rect#a  x=0 y=0 w=1 h=1\n├── circle#b  cx=0 cy=0 r=1\n└── text#c  (0,0) \"c\""
+        },
+        {
+          "command": "group pair c a",
+          "output": "g#pair created with 2 children"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#pair\n│   ├── rect#a  x=0 y=0 w=1 h=1\n│   └── text#c  (0,0) \"c\"\n└── circle#b  cx=0 cy=0 r=1"
+        },
+        {
+          "command": "show a",
+          "output": "rect#a  parent=g#pair\n  x=0 y=0 w=1 h=1"
+        },
+        {
+          "command": "show b",
+          "output": "circle#b  parent=svg\n  cx=0 cy=0 r=1"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── rect#a  x=0 y=0 w=1 h=1\n├── circle#b  cx=0 cy=0 r=1\n└── text#c  (0,0) \"c\""
+        },
+        {
+          "command": "redo",
+          "output": "g#pair created with 2 children"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#pair\n│   ├── rect#a  x=0 y=0 w=1 h=1\n│   └── text#c  (0,0) \"c\"\n└── circle#b  cx=0 cy=0 r=1"
+        }
+      ],
+      "durationMs": 0.72
+    },
+    {
+      "id": "G03",
+      "name": "group 拒绝同时收编祖先及后代",
+      "requirement": "4.2 group 环检查",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g outer",
+          "output": "g#outer created"
+        },
+        {
+          "command": "create g inner in outer",
+          "output": "g#inner created in g#outer"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#outer\n    └── g#inner"
+        },
+        {
+          "command": "group bad outer inner",
+          "output": "error: cannot group a container into its own descendant: outer"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#outer\n    └── g#inner"
+        }
+      ],
+      "durationMs": 0.36
+    },
+    {
+      "id": "G04",
+      "name": "非根级 ungroup 保留子节点位置及索引",
+      "requirement": "3 ungroup",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g outer",
+          "output": "g#outer created"
+        },
+        {
+          "command": "create rect first 0 0 1 1 in outer",
+          "output": "rect#first created in g#outer"
+        },
+        {
+          "command": "create g inner in outer",
+          "output": "g#inner created in g#outer"
+        },
+        {
+          "command": "create rect a 1 2 3 4 in inner",
+          "output": "rect#a created in g#inner"
+        },
+        {
+          "command": "create circle b 5 6 7 in inner",
+          "output": "circle#b created in g#inner"
+        },
+        {
+          "command": "create text last 0 0 \"last\" in outer",
+          "output": "text#last created in g#outer"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#outer\n    ├── rect#first  x=0 y=0 w=1 h=1\n    ├── g#inner\n    │   ├── rect#a  x=1 y=2 w=3 h=4\n    │   └── circle#b  cx=5 cy=6 r=7\n    └── text#last  (0,0) \"last\""
+        },
+        {
+          "command": "ungroup inner",
+          "output": "g#inner ungrouped"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#outer\n    ├── rect#first  x=0 y=0 w=1 h=1\n    ├── rect#a  x=1 y=2 w=3 h=4\n    ├── circle#b  cx=5 cy=6 r=7\n    └── text#last  (0,0) \"last\""
+        },
+        {
+          "command": "show b",
+          "output": "circle#b  parent=g#outer\n  cx=5 cy=6 r=7"
+        },
+        {
+          "command": "show inner",
+          "output": "error: no such shape: inner"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#outer\n    ├── rect#first  x=0 y=0 w=1 h=1\n    ├── g#inner\n    │   ├── rect#a  x=1 y=2 w=3 h=4\n    │   └── circle#b  cx=5 cy=6 r=7\n    └── text#last  (0,0) \"last\""
+        }
+      ],
+      "durationMs": 0.98
+    },
+    {
+      "id": "G05",
+      "name": "拒绝根级 ungroup 且维持历史",
+      "requirement": "4.2 根级容器禁止解组",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g outer",
+          "output": "g#outer created"
+        },
+        {
+          "command": "ungroup outer",
+          "output": "error: cannot ungroup top-level container: outer"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "show outer",
+          "output": "error: no such shape: outer"
+        }
+      ],
+      "durationMs": 0.27
+    },
+    {
+      "id": "G06",
+      "name": "addto 在无祖先关系的容器间迁移图形",
+      "requirement": "3 addto",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g a",
+          "output": "g#a created"
+        },
+        {
+          "command": "create g b",
+          "output": "g#b created"
+        },
+        {
+          "command": "create rect r 1 2 3 4 in a",
+          "output": "rect#r created in g#a"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#a\n│   └── rect#r  x=1 y=2 w=3 h=4\n└── g#b"
+        },
+        {
+          "command": "addto b r",
+          "output": "rect#r moved into g#b"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=g#b\n  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=g#b\n  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#a\n│   └── rect#r  x=1 y=2 w=3 h=4\n└── g#b"
+        }
+      ],
+      "durationMs": 0.31
+    },
+    {
+      "id": "G07",
+      "name": "front/back 仅改变同级绘制顺序",
+      "requirement": "3 front/back",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g parent",
+          "output": "g#parent created"
+        },
+        {
+          "command": "create g a in parent",
+          "output": "g#a created in g#parent"
+        },
+        {
+          "command": "create g b in parent",
+          "output": "g#b created in g#parent"
+        },
+        {
+          "command": "create g c in parent",
+          "output": "g#c created in g#parent"
+        },
+        {
+          "command": "front a",
+          "output": "g#a moved to front"
+        },
+        {
+          "command": "tree parent",
+          "output": "└── g#parent\n    ├── g#b\n    ├── g#c\n    └── g#a"
+        },
+        {
+          "command": "back c",
+          "output": "g#c moved to back"
+        },
+        {
+          "command": "tree parent",
+          "output": "└── g#parent\n    ├── g#c\n    ├── g#b\n    └── g#a"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "tree parent",
+          "output": "└── g#parent\n    ├── g#b\n    ├── g#c\n    └── g#a"
+        }
+      ],
+      "durationMs": 0.47
+    },
+    {
+      "id": "G08",
+      "name": "删除整个子树后 undo 恢复父子关系",
+      "requirement": "3 delete；4.3 undo",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g parent",
+          "output": "g#parent created"
+        },
+        {
+          "command": "create g child in parent",
+          "output": "g#child created in g#parent"
+        },
+        {
+          "command": "create rect r 1 2 3 4 in child",
+          "output": "rect#r created in g#child"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#parent\n    └── g#child\n        └── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "delete parent",
+          "output": "g#parent deleted"
+        },
+        {
+          "command": "show parent",
+          "output": "error: no such shape: parent"
+        },
+        {
+          "command": "show child",
+          "output": "error: no such shape: child"
+        },
+        {
+          "command": "show r",
+          "output": "error: no such shape: r"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#parent\n    └── g#child\n        └── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "redo",
+          "output": "g#parent deleted"
+        },
+        {
+          "command": "show r",
+          "output": "error: no such shape: r"
+        }
+      ],
+      "durationMs": 0.35
+    },
+    {
+      "id": "G09",
+      "name": "跨父容器 group 支持收编并可整体撤销",
+      "requirement": "3 group 从各自原父容器摘出",
+      "issue": "Q1",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g a",
+          "output": "g#a created"
+        },
+        {
+          "command": "create g b",
+          "output": "g#b created"
+        },
+        {
+          "command": "create rect r 1 2 3 4 in a",
+          "output": "rect#r created in g#a"
+        },
+        {
+          "command": "create circle c 5 6 7 in b",
+          "output": "circle#c created in g#b"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#a\n│   └── rect#r  x=1 y=2 w=3 h=4\n└── g#b\n    └── circle#c  cx=5 cy=6 r=7"
+        },
+        {
+          "command": "group pair r c",
+          "output": "error: group targets must have the same parent"
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected command success: group pair r c\nerror: group targets must have the same parent",
+        "stack": "AssertionError [ERR_ASSERTION]: Expected command success: group pair r c\nerror: group targets must have the same parent\n    at Object.ok (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:69:16)\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:215:5)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": false,
+        "expected": true,
+        "operator": "=="
+      },
+      "durationMs": 0.56
+    },
+    {
+      "id": "G10",
+      "name": "addto 必须拒绝把祖先放入其后代",
+      "requirement": "2 树形结构；3 addto",
+      "issue": "Q2",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g outer",
+          "output": "g#outer created"
+        },
+        {
+          "command": "create g inner in outer",
+          "output": "g#inner created in g#outer"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#outer\n    └── g#inner"
+        },
+        {
+          "command": "addto inner outer",
+          "output": "g#outer moved into g#inner"
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "祖先迁入后代必须被拒绝",
+        "stack": "AssertionError [ERR_ASSERTION]: 祖先迁入后代必须被拒绝\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:225:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": "g#outer moved into g#inner",
+        "expected": {},
+        "operator": "match"
+      },
+      "durationMs": 0.48
+    },
+    {
+      "id": "G11",
+      "name": "addto 到当前父容器时将节点排到末尾",
+      "requirement": "3 addto 作为最后一个子节点",
+      "issue": "Q3",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g parent",
+          "output": "g#parent created"
+        },
+        {
+          "command": "create rect a 0 0 1 1 in parent",
+          "output": "rect#a created in g#parent"
+        },
+        {
+          "command": "create circle b 0 0 1 in parent",
+          "output": "circle#b created in g#parent"
+        },
+        {
+          "command": "addto parent a",
+          "output": "error: cannot move container into its own descendant: parent"
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected command success: addto parent a\nerror: cannot move container into its own descendant: parent",
+        "stack": "AssertionError [ERR_ASSERTION]: Expected command success: addto parent a\nerror: cannot move container into its own descendant: parent\n    at Object.ok (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:69:16)\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:230:5)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": false,
+        "expected": true,
+        "operator": "=="
+      },
+      "durationMs": 0.43
+    },
+    {
+      "id": "H01",
+      "name": "显示命令不进入撤销栈",
+      "requirement": "3 显示类跳过历史",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 0 0 1 1",
+          "output": "rect#r created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=0 y=0 w=1 h=1"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=0 y=0 w=1 h=1"
+        },
+        {
+          "command": "canvas",
+          "output": "canvas 800x600"
+        },
+        {
+          "command": "help",
+          "output": "SVG 编辑器命令指南\n\n快速开始：\n  init                         新建默认 800x600 画布\n  create rect r1 20 20 120 60 steelblue\n  tree                         查看图形结构\n  save drawing.svg             保存 SVG，可用浏览器打开预览\n\n常用命令：\n  文档：init [w] [h] | read <file.svg> | save [file.svg] | canvas [w] [h]\n  创建：create rect|circle|ellipse|line|text|g <id> ... [in <containerId>]\n  编辑：move <id> <dx> <dy> | scale <id> <factor> | set <id> <attr> <value> | delete <id>\n  组合：group <newGid> <id1> <id2>... | ungroup <gid> | addto <gid> <id> | front/back <id>\n  查看：tree [id] | show <id> | help [command]\n  历史：undo | redo\n\n文字内容请用双引号包裹；命令行也支持 # 开头的注释行。\n输入 'help <command>' 查看该命令的参数和示例。"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "show r",
+          "output": "error: no such shape: r"
+        }
+      ],
+      "durationMs": 0.29
+    },
+    {
+      "id": "H02",
+      "name": "undo 后新编辑清空 redo",
+      "requirement": "3 redo 栈清空",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4",
+          "output": "rect#r created"
+        },
+        {
+          "command": "move r 10 20",
+          "output": "rect#r moved by (10,20)"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "set r fill red",
+          "output": "rect#r updated: fill=red"
+        },
+        {
+          "command": "redo",
+          "output": "error: nothing to redo"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=1 y=2 w=3 h=4\n  fill=red"
+        }
+      ],
+      "durationMs": 0.32
+    },
+    {
+      "id": "H03",
+      "name": "失败编辑不清除已有 redo",
+      "requirement": "2 失败不改变任何状态",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4",
+          "output": "rect#r created"
+        },
+        {
+          "command": "move r 10 20",
+          "output": "rect#r moved by (10,20)"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "set r unsupported 1",
+          "output": "error: unknown attribute: unsupported"
+        },
+        {
+          "command": "redo",
+          "output": "rect#r moved by (10,20)"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=11 y=22 w=3 h=4"
+        }
+      ],
+      "durationMs": 0.27
+    },
+    {
+      "id": "H04",
+      "name": "文档操作后 undo/redo 锁定且下次成功编辑解锁",
+      "requirement": "4.3 文档类历史边界",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "undo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "redo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "create g checkpoint",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "undo",
+          "output": "error: nothing to undo"
+        },
+        {
+          "command": "redo",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "delete checkpoint",
+          "output": "g#checkpoint deleted"
+        },
+        {
+          "command": "canvas 300 200",
+          "output": "canvas set to 300x200"
+        },
+        {
+          "command": "undo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "redo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "create g checkpoint",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "undo",
+          "output": "error: nothing to undo"
+        },
+        {
+          "command": "redo",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "delete checkpoint",
+          "output": "g#checkpoint deleted"
+        },
+        {
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-GP0kjU\\history.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-GP0kjU\\history.svg (0 elements)"
+        },
+        {
+          "command": "undo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "redo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "create g checkpoint",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "undo",
+          "output": "error: nothing to undo"
+        },
+        {
+          "command": "redo",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "delete checkpoint",
+          "output": "g#checkpoint deleted"
+        },
+        {
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-GP0kjU\\history.svg\"",
+          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-GP0kjU\\history.svg (0 elements)"
+        },
+        {
+          "command": "undo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "redo",
+          "output": "error: undo not allowed after io command"
+        },
+        {
+          "command": "create g checkpoint",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "undo",
+          "output": "error: nothing to undo"
+        },
+        {
+          "command": "redo",
+          "output": "g#checkpoint created"
+        },
+        {
+          "command": "delete checkpoint",
+          "output": "g#checkpoint deleted"
+        }
+      ],
+      "durationMs": 4.23
+    },
+    {
+      "id": "H05",
+      "name": "多次 undo/redo 后快照不与当前图形共享状态",
+      "requirement": "Command 快照恢复",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4",
+          "output": "rect#r created"
+        },
+        {
+          "command": "move r 10 0",
+          "output": "rect#r moved by (10,0)"
+        },
+        {
+          "command": "move r 20 0",
+          "output": "rect#r moved by (20,0)"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=11 y=2 w=3 h=4"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "redo",
+          "output": "rect#r moved by (10,0)"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=11 y=2 w=3 h=4"
+        },
+        {
+          "command": "redo",
+          "output": "rect#r moved by (20,0)"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=31 y=2 w=3 h=4"
+        }
+      ],
+      "durationMs": 0.32
+    },
+    {
+      "id": "E01",
+      "name": "canvas 第二参数非法时尺寸与历史都不改变",
+      "requirement": "2 命令失败不改变状态",
+      "issue": "Q4",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g retained",
+          "output": "g#retained created"
+        },
+        {
+          "command": "canvas",
+          "output": "canvas 800x600"
+        },
+        {
+          "command": "canvas 100 bad",
+          "output": "error: invalid number: bad"
+        },
+        {
+          "command": "canvas",
+          "output": "canvas 100x600"
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'canvas 100x600'\n- 'canvas 800x600'\n          ^\n",
+        "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'canvas 100x600'\n- 'canvas 800x600'\n          ^\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:278:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": "canvas 100x600",
+        "expected": "canvas 800x600",
+        "operator": "strictEqual"
+      },
+      "durationMs": 0.71
+    },
+    {
+      "id": "E02",
+      "name": "文件读写失败保留文档与 undo 历史",
+      "requirement": "4.2 IO 错误；2 状态原子性",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4",
+          "output": "rect#r created"
+        },
+        {
+          "command": "move r 10 20",
+          "output": "rect#r moved by (10,20)"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=11 y=22 w=3 h=4"
+        },
+        {
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-thO4qY\\absent\\file.svg\"",
+          "output": "error: cannot read file: C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-thO4qY\\absent\\file.svg"
+        },
+        {
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-thO4qY\\absent\\file.svg\"",
+          "output": "error: cannot write file: C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-thO4qY\\absent\\file.svg"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=11 y=22 w=3 h=4"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=svg\n  x=1 y=2 w=3 h=4"
+        }
+      ],
+      "durationMs": 0.72
+    },
+    {
+      "id": "E03",
+      "name": "参数缺失与超量时返回用法且保留状态",
+      "requirement": "3 命令语法；2 错误约定",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4",
+          "output": "rect#r created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "init 1 2 3",
+          "output": "error: usage: init [w] [h]\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "canvas 2",
+          "output": "error: usage: canvas [w] [h]\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "read",
+          "output": "error: usage: read <file.svg>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "save a.svg b.svg",
+          "output": "error: usage: save [file.svg]\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "create rect",
+          "output": "error: usage: create <type> <id> [params...] [in <containerId>]\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "delete",
+          "output": "error: usage: delete <id>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "move r 2",
+          "output": "error: usage: move <id> <dx> <dy>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "scale r",
+          "output": "error: usage: scale <id> <factor>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "set r x",
+          "output": "error: usage: set <id> <attr> <value>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "group",
+          "output": "error: usage: group <newGid> <id1> <id2>...\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "ungroup",
+          "output": "error: usage: ungroup <gid>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "addto r",
+          "output": "error: usage: addto <gid> <id>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "front",
+          "output": "error: usage: front <id>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "back",
+          "output": "error: usage: back <id>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "tree a b",
+          "output": "error: usage: tree [id]\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "show",
+          "output": "error: usage: show <id>\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "help a b",
+          "output": "error: usage: help [command]\n  Hint: type 'help <command>' to see command syntax and an example."
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        }
+      ],
+      "durationMs": 0.61
+    },
+    {
+      "id": "F01",
+      "name": "保存生成有效 SVG 且特殊字符正确转义",
+      "requirement": "0 SVG 文本；3 save",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create text title 10 20 \"A & B < C\"",
+          "output": "text#title created"
+        },
+        {
+          "command": "create rect r 0 0 1 1 red",
+          "output": "rect#r created"
+        },
+        {
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-bkOiuN\\export.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-bkOiuN\\export.svg (2 elements)"
+        },
+        {
+          "label": "file: export.svg",
+          "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"600\" viewBox=\"0 0 800 600\">\n  <text id=\"title\" x=\"10\" y=\"20\">A &amp; B &lt; C</text>\n  <rect id=\"r\" x=\"0\" y=\"0\" width=\"1\" height=\"1\" fill=\"red\"/>\n</svg>\n"
+        }
+      ],
+      "durationMs": 2.77
+    },
+    {
+      "id": "F02",
+      "name": "基础 save/read 保留几何、文本和层级",
+      "requirement": "3 read/save；0.1 SVG 格式",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g scene",
+          "output": "g#scene created"
+        },
+        {
+          "command": "create rect r 1 2 3 4 red in scene",
+          "output": "rect#r created in g#scene"
+        },
+        {
+          "command": "create text t 5 6 \"中文 & test\" in scene",
+          "output": "text#t created in g#scene"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#scene\n    ├── rect#r  x=1 y=2 w=3 h=4\n    └── text#t  (5,6) \"中文 & test\""
+        },
+        {
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-vzmI7y\\basic.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-vzmI7y\\basic.svg (3 elements)"
+        },
+        {
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-vzmI7y\\basic.svg\"",
+          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-vzmI7y\\basic.svg (3 elements)"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#scene\n    ├── rect#r  x=1 y=2 w=3 h=4\n    └── text#t  (5,6) \"中文 & test\""
+        },
+        {
+          "command": "show t",
+          "output": "text#t  parent=g#scene\n  (5,6) \"中文 & test\"\n  x=5\n  y=6"
+        }
+      ],
+      "durationMs": 2.96
+    },
+    {
+      "id": "F03",
+      "name": "无参数 save 复用路径且支持含空格路径",
+      "requirement": "3 save [file.svg]；2 带空格参数",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4",
+          "output": "rect#r created"
+        },
+        {
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NJUbLU\\a drawing.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NJUbLU\\a drawing.svg (1 elements)"
+        },
+        {
+          "command": "move r 10 20",
+          "output": "rect#r moved by (10,20)"
+        },
+        {
+          "command": "save",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NJUbLU\\a drawing.svg (1 elements)"
+        },
+        {
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NJUbLU\\a drawing.svg\"",
+          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NJUbLU\\a drawing.svg (1 elements)"
+        },
+        {
+          "command": "set r fill red",
+          "output": "rect#r updated: fill=red"
+        },
+        {
+          "command": "save",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NJUbLU\\a drawing.svg (1 elements)"
+        },
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "save",
+          "output": "error: usage: save <file.svg> (no previous read path)\n  Hint: type 'help <command>' to see command syntax and an example."
+        }
+      ],
+      "durationMs": 3.83
+    },
+    {
+      "id": "F04",
+      "name": "缺失 id 自动补全、警告并避免显式 id 冲突",
+      "requirement": "2 自动补 id",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "read \"C:\\Users\\25049\\gjrjkf\\test\\fixtures\\missing-ids.svg\"",
+          "output": "warning: assigned id rect2 to unnamed <rect>\nwarning: assigned id g3 to unnamed <g>\nwarning: assigned id circle4 to unnamed <circle>\nread C:\\Users\\25049\\gjrjkf\\test\\fixtures\\missing-ids.svg (4 elements)"
+        },
+        {
+          "command": "show rect1",
+          "output": "rect#rect1  parent=svg\n  x=10 y=10 w=10 h=10\n  x=10\n  y=10\n  width=10\n  height=10"
+        },
+        {
+          "label": "allocated ids",
+          "actual": [
+            "rect2",
+            "rect1",
+            "g3",
+            "circle4"
+          ]
+        }
+      ],
+      "durationMs": 1.16
+    },
+    {
+      "id": "F05",
+      "name": "读取重复 id 拒绝替换当前文档",
+      "requirement": "2 id 全文档唯一",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g retained",
+          "output": "g#retained created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#retained"
+        },
+        {
+          "command": "read \"C:\\Users\\25049\\gjrjkf\\test\\fixtures\\duplicate-ids.svg\"",
+          "output": "error: cannot read file: C:\\Users\\25049\\gjrjkf\\test\\fixtures\\duplicate-ids.svg"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#retained"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        }
+      ],
+      "durationMs": 0.72
+    },
+    {
+      "id": "F06",
+      "name": "原说明 other.svg 的元素数量和嵌套属性",
+      "requirement": "6 典型会话外部 SVG",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "read \"C:\\Users\\25049\\gjrjkf\\test\\fixtures\\other.svg\"",
+          "output": "warning: assigned id rect1 to unnamed <rect>\nread C:\\Users\\25049\\gjrjkf\\test\\fixtures\\other.svg (7 elements)"
+        },
+        {
+          "command": "show r2",
+          "output": "rect#r2  parent=g#g1\n  x=0 y=0 w=10 h=10\n  x=0\n  y=0\n  width=10\n  height=10"
+        },
+        {
+          "command": "show e1",
+          "output": "ellipse#e1  parent=svg\n  cx=1 cy=2 rx=3 ry=4\n  cx=1\n  cy=2\n  rx=3\n  ry=4"
+        }
+      ],
+      "durationMs": 0.59
+    },
+    {
+      "id": "F07",
+      "name": "导入后移动、保存应保持 XML 有效且坐标不回退",
+      "requirement": "3 read/move/save 往返",
+      "issue": "Q5",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "read \"C:\\Users\\25049\\gjrjkf\\test\\fixtures\\other.svg\"",
+          "output": "warning: assigned id rect1 to unnamed <rect>\nread C:\\Users\\25049\\gjrjkf\\test\\fixtures\\other.svg (7 elements)"
+        },
+        {
+          "command": "move r2 10 20",
+          "output": "rect#r2 moved by (10,20)"
+        },
+        {
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-hujWqe\\export.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-hujWqe\\export.svg (7 elements)"
+        },
+        {
+          "label": "file: export.svg",
+          "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\">\n  <rect id=\"rect1\" x=\"0\" y=\"0\" width=\"400\" height=\"300\" x=\"0\" y=\"0\" width=\"400\" height=\"300\" fill=\"#ffffff\"/>\n  <text id=\"t1\" x=\"10\" y=\"290\" x=\"10\" y=\"290\">imported</text>\n  <circle id=\"c1\" cx=\"50\" cy=\"50\" r=\"10\" cx=\"50\" cy=\"50\" r=\"10\"/>\n  <g id=\"g1\" rect=\"[object Object]\" circle=\"[object Object]\">\n    <rect id=\"r2\" x=\"10\" y=\"20\" width=\"10\" height=\"10\" x=\"0\" y=\"0\" width=\"10\" height=\"10\"/>\n    <circle id=\"c2\" cx=\"5\" cy=\"5\" r=\"2\" cx=\"5\" cy=\"5\" r=\"2\"/>\n  </g>\n  <ellipse id=\"e1\" cx=\"1\" cy=\"2\" rx=\"3\" ry=\"4\" cx=\"1\" cy=\"2\" rx=\"3\" ry=\"4\"/>\n</svg>\n"
+        },
+        {
+          "label": "XML validator",
+          "actual": {
+            "err": {
+              "code": "InvalidAttr",
+              "msg": "Attribute 'x' is repeated.",
+              "line": 3,
+              "col": 57
+            }
+          }
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "导入后保存不得输出重复几何属性\n+ actual - expected\n\n+ {\n+   err: {\n+     code: 'InvalidAttr',\n+     col: 57,\n+     line: 3,\n+     msg: \"Attribute 'x' is repeated.\"\n+   }\n+ }\n- true\n",
+        "stack": "AssertionError [ERR_ASSERTION]: 导入后保存不得输出重复几何属性\n+ actual - expected\n\n+ {\n+   err: {\n+     code: 'InvalidAttr',\n+     col: 57,\n+     line: 3,\n+     msg: \"Attribute 'x' is repeated.\"\n+   }\n+ }\n- true\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:362:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": {
+          "err": {
+            "code": "InvalidAttr",
+            "msg": "Attribute 'x' is repeated.",
+            "line": 3,
+            "col": 57
+          }
+        },
+        "expected": true,
+        "operator": "strictEqual"
+      },
+      "durationMs": 3.18
+    },
+    {
+      "id": "F08",
+      "name": "导入保留交错类型同级及嵌套绘制顺序",
+      "requirement": "0 SVG 树；3 read/front/back",
+      "issue": "Q6",
+      "status": "fail",
+      "steps": [
+        {
+          "label": "input ordered.svg",
+          "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"300\" height=\"200\">\n  <rect id=\"first\" x=\"10\" y=\"20\" width=\"100\" height=\"50\" fill=\"red\"/>\n  <circle id=\"middle\" cx=\"30\" cy=\"40\" r=\"10\" fill=\"blue\"/>\n  <rect id=\"last\" x=\"50\" y=\"60\" width=\"80\" height=\"40\" fill=\"green\"/>\n  <g id=\"nested\">\n    <rect id=\"inner-first\" x=\"1\" y=\"2\" width=\"3\" height=\"4\"/>\n    <text id=\"inner-middle\" x=\"5\" y=\"6\">start &amp; end</text>\n    <rect id=\"inner-last\" x=\"7\" y=\"8\" width=\"9\" height=\"10\"/>\n  </g>\n</svg>\n"
+        },
+        {
+          "label": "actual root order",
+          "actual": [
+            "first",
+            "last",
+            "middle",
+            "nested"
+          ]
+        },
+        {
+          "label": "actual nested order",
+          "actual": [
+            "inner-first",
+            "inner-last",
+            "inner-middle"
+          ]
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    'first',\n+   'last',\n    'middle',\n-   'last',\n    'nested'\n  ]\n",
+        "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    'first',\n+   'last',\n    'middle',\n-   'last',\n    'nested'\n  ]\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:371:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": [
+          "first",
+          "last",
+          "middle",
+          "nested"
+        ],
+        "expected": [
+          "first",
+          "middle",
+          "last",
+          "nested"
+        ],
+        "operator": "deepStrictEqual"
+      },
+      "durationMs": 1
+    },
+    {
+      "id": "F09",
+      "name": "格式损坏的 XML 拒绝导入且保留文档",
+      "requirement": "3 read；2 失败不改变状态",
+      "issue": "Q8",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g retained",
+          "output": "g#retained created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#retained"
+        },
+        {
+          "command": "read \"C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg\"",
+          "output": "read C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg (2 elements)"
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "The input did not match the regular expression /^error:/. Input:\n\n'read C:\\\\Users\\\\25049\\\\gjrjkf\\\\test\\\\fixtures\\\\invalid.svg (2 elements)'\n",
+        "stack": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^error:/. Input:\n\n'read C:\\\\Users\\\\25049\\\\gjrjkf\\\\test\\\\fixtures\\\\invalid.svg (2 elements)'\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:378:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": "read C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg (2 elements)",
+        "expected": {},
+        "operator": "match"
+      },
+      "durationMs": 0.88
+    },
+    {
+      "id": "V01",
+      "name": "tree 子树过滤与 show 的父节点和属性",
+      "requirement": "5.1 tree [id]；5.2 show",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create g scene",
+          "output": "g#scene created"
+        },
+        {
+          "command": "create circle c 10 20 30 red in scene",
+          "output": "circle#c created in g#scene"
+        },
+        {
+          "command": "create g outside",
+          "output": "g#outside created"
+        },
+        {
+          "command": "tree scene",
+          "output": "└── g#scene\n    └── circle#c  cx=10 cy=20 r=30"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=g#scene\n  cx=10 cy=20 r=30\n  fill=red"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=g#scene\n  cx=10 cy=20 r=30\n  fill=red"
+        }
+      ],
+      "durationMs": 0.31
+    },
+    {
+      "id": "V02",
+      "name": "tree 必须内联关键 fill 样式",
+      "requirement": "5.1 tree 内联关键属性示例",
+      "issue": "Q7",
+      "status": "fail",
+      "steps": [
+        {
+          "command": "init",
+          "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
+        },
+        {
+          "command": "create rect r 1 2 3 4 red",
+          "output": "rect#r created"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
+        }
+      ],
+      "error": {
+        "name": "AssertionError",
+        "message": "The input did not match the regular expression /rect#r.*fill=red/. Input:\n\n'svg (800x600)\\n└── rect#r  x=1 y=2 w=3 h=4'\n",
+        "stack": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /rect#r.*fill=red/. Input:\n\n'svg (800x600)\\n└── rect#r  x=1 y=2 w=3 h=4'\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:391:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+        "actual": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4",
+        "expected": {},
+        "operator": "match"
+      },
+      "durationMs": 0.37
+    },
+    {
+      "id": "I01",
+      "name": "实际 REPL 回放双节点流程图并保留 SVG",
+      "requirement": "6.1 版本 A；REPL 逐行输入",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "label": "REPL stdin",
+          "actual": "# 在项目根目录回放；导出文件保留在 test/results/ 下。\ninit 800 600\ncreate g flowchart\ncreate g node1 in flowchart\ncreate rect start 120 100 160 60 #4a90d9 in node1\ncreate text start-label 155 135 \"开始\" in node1\ncreate g node2 in flowchart\ncreate rect process 520 100 160 60 #f5a623 in node2\ncreate text process-label 545 135 \"处理数据\" in node2\ncreate line arrow1 280 130 520 130 black in flowchart\ntree\nmove node2 0 100\nshow process\nundo\nshow process\nredo\nset process-label text \"处理数据 v2\"\nsave test/results/flowchart.svg\nundo\nread test/results/flowchart.svg\ntree\n"
+        },
+        {
+          "label": "REPL stdout",
+          "actual": "svg-editor 0.1 — SVG 命令行编辑器\n输入 help 查看命令总览，输入 help create 查看参数与示例。\n试试看：init → create rect r1 20 20 120 60 steelblue → tree → save drawing.svg\n文字参数可用双引号包住；输入 # 开头的行可写脚本注释。\n\nsvg> svg> canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'.\nsvg> g#flowchart created\nsvg> g#node1 created in g#flowchart\nsvg> rect#start created in g#node1\nsvg> text#start-label created in g#node1\nsvg> g#node2 created in g#flowchart\nsvg> rect#process created in g#node2\nsvg> text#process-label created in g#node2\nsvg> line#arrow1 created in g#flowchart\nsvg> svg (800x600)\n└── g#flowchart\n    ├── g#node1\n    │   ├── rect#start  x=120 y=100 w=160 h=60\n    │   └── text#start-label  (155,135) \"开始\"\n    ├── g#node2\n    │   ├── rect#process  x=520 y=100 w=160 h=60\n    │   └── text#process-label  (545,135) \"处理数据\"\n    └── line#arrow1  (280,130) -> (520,130)\nsvg> g#node2 moved by (0,100)\nsvg> rect#process  parent=g#node2\n  x=520 y=200 w=160 h=60\n  fill=#f5a623\nsvg> undone\nsvg> rect#process  parent=g#node2\n  x=520 y=100 w=160 h=60\n  fill=#f5a623\nsvg> g#node2 moved by (0,100)\nsvg> text#process-label updated: text=\"处理数据 v2\"\nsvg> saved to test/results/flowchart.svg (8 elements)\nsvg> error: undo not allowed after io command\nsvg> read test/results/flowchart.svg (8 elements)\nsvg> svg (800x600)\n└── g#flowchart\n    ├── g#node1\n    │   ├── rect#start  x=120 y=100 w=160 h=60\n    │   └── text#start-label  (155,135) \"开始\"\n    ├── g#node2\n    │   ├── rect#process  x=520 y=200 w=160 h=60\n    │   └── text#process-label  (545,235) \"处理数据 v2\"\n    └── line#arrow1  (280,130) -> (520,130)\nsvg> "
+        },
+        {
+          "label": "REPL stderr",
+          "actual": ""
+        }
+      ],
+      "durationMs": 85.91
+    },
+    {
+      "id": "I02",
+      "name": "实际 REPL 错误脚本继续执行且失败不入历史",
+      "requirement": "2 错误约定；4.2 错误会话",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "label": "REPL stdin",
+          "actual": "init\ncreate rect r1 10 20 100 50 red\ncreate rect r1 0 0 1 1\nmove missing 1 2\ncreate g child in missing\ncreate g child in r1\nscale r1 0\nset r1 unsupported 1\ncreate box later 0 0 10 10 \"later\"\nmove r1 NaN 0\ncreate text broken 0 0 \"unfinished\nshow r1\nundo\ntree\n"
+        },
+        {
+          "label": "REPL stdout",
+          "actual": "svg-editor 0.1 — SVG 命令行编辑器\n输入 help 查看命令总览，输入 help create 查看参数与示例。\n试试看：init → create rect r1 20 20 120 60 steelblue → tree → save drawing.svg\n文字参数可用双引号包住；输入 # 开头的行可写脚本注释。\n\nsvg> canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'.\nsvg> rect#r1 created\nsvg> error: id already exists: r1\nsvg> error: no such shape: missing\nsvg> error: no such container: missing\nsvg> error: not a container: r1\nsvg> error: scale factor must be positive\nsvg> error: unknown attribute: unsupported\nsvg> error: unknown shape type: box (is the plugin loaded?)\nsvg> error: invalid number: NaN\nsvg> error: unterminated quoted string\nsvg> rect#r1  parent=svg\n  x=10 y=20 w=100 h=50\n  fill=red\nsvg> undone\nsvg> svg (800x600)\n(empty canvas; try 'create rect r1 20 20 120 60 steelblue')\nsvg> "
+        }
+      ],
+      "durationMs": 69.1
+    },
+    {
+      "id": "A01",
+      "name": "生产源码依赖方向符合 README 模块规则",
+      "requirement": "架构方案 3 依赖方向规则",
+      "issue": null,
+      "status": "pass",
+      "steps": [
+        {
+          "label": "source files inspected",
+          "actual": [
+            "src/Cli.ts",
+            "src/commands/CallbackCommand.ts",
+            "src/commands/Command.ts",
+            "src/commands/CommandManager.ts",
+            "src/Editor.ts",
+            "src/index.ts",
+            "src/model/Circle.ts",
+            "src/model/Ellipse.ts",
+            "src/model/Group.ts",
+            "src/model/Line.ts",
+            "src/model/Rect.ts",
+            "src/model/Shape.ts",
+            "src/model/SvgDocument.ts",
+            "src/model/Text.ts"
+          ]
+        },
+        {
+          "label": "static imports including type imports",
+          "actual": [
+            {
+              "from": "src/Cli.ts",
+              "to": "node:fs"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "node:path"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/Editor"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/commands/CallbackCommand"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/Circle"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/Ellipse"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/Group"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/Line"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/Rect"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/SvgDocument"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/model/Text"
+            },
+            {
+              "from": "src/commands/CallbackCommand.ts",
+              "to": "src/commands/Command"
+            },
+            {
+              "from": "src/commands/CallbackCommand.ts",
+              "to": "src/Editor"
+            },
+            {
+              "from": "src/commands/Command.ts",
+              "to": "src/model/SvgDocument"
+            },
+            {
+              "from": "src/commands/Command.ts",
+              "to": "src/Editor"
+            },
+            {
+              "from": "src/commands/CommandManager.ts",
+              "to": "src/commands/Command"
+            },
+            {
+              "from": "src/Editor.ts",
+              "to": "src/commands/CommandManager"
+            },
+            {
+              "from": "src/Editor.ts",
+              "to": "src/model/SvgDocument"
+            },
+            {
+              "from": "src/index.ts",
+              "to": "node:readline"
+            },
+            {
+              "from": "src/index.ts",
+              "to": "src/Cli"
+            },
+            {
+              "from": "src/model/Circle.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Ellipse.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Group.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Group.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Line.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Rect.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Shape.ts",
+              "to": "src/model/Group"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "fast-xml-parser"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/Circle"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/Ellipse"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/Group"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/Line"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/Rect"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/Text"
+            },
+            {
+              "from": "src/model/Text.ts",
+              "to": "src/model/Shape"
+            }
+          ]
+        }
+      ],
+      "durationMs": 2.48
+    }
+  ],
+  "summary": {
+    "total": 49,
+    "passed": 40,
+    "failed": 9
+  }
+}

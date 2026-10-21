@@ -1,0 +1,47 @@
+svg-editor 0.1 — SVG 命令行编辑器
+输入 help 查看命令总览，输入 help create 查看参数与示例。
+试试看：init → create rect r1 20 20 120 60 steelblue → tree → save drawing.svg
+文字参数可用双引号包住；输入 # 开头的行可写脚本注释。
+
+svg> svg> canvas 800x600 created
+  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'.
+svg> g#flowchart created
+svg> g#node1 created in g#flowchart
+svg> rect#start created in g#node1
+svg> text#start-label created in g#node1
+svg> g#node2 created in g#flowchart
+svg> rect#process created in g#node2
+svg> text#process-label created in g#node2
+svg> line#arrow1 created in g#flowchart
+svg> svg (800x600)
+└── g#flowchart
+    ├── g#node1
+    │   ├── rect#start  x=120 y=100 w=160 h=60
+    │   └── text#start-label  (155,135) "开始"
+    ├── g#node2
+    │   ├── rect#process  x=520 y=100 w=160 h=60
+    │   └── text#process-label  (545,135) "处理数据"
+    └── line#arrow1  (280,130) -> (520,130)
+svg> g#node2 moved by (0,100)
+svg> rect#process  parent=g#node2
+  x=520 y=200 w=160 h=60
+  fill=#f5a623
+svg> undone
+svg> rect#process  parent=g#node2
+  x=520 y=100 w=160 h=60
+  fill=#f5a623
+svg> g#node2 moved by (0,100)
+svg> text#process-label updated: text="处理数据 v2"
+svg> saved to test/results/flowchart.svg (8 elements)
+svg> error: undo not allowed after io command
+svg> read test/results/flowchart.svg (8 elements)
+svg> svg (800x600)
+└── g#flowchart
+    ├── g#node1
+    │   ├── rect#start  x=120 y=100 w=160 h=60
+    │   └── text#start-label  (155,135) "开始"
+    ├── g#node2
+    │   ├── rect#process  x=520 y=200 w=160 h=60
+    │   └── text#process-label  (545,235) "处理数据 v2"
+    └── line#arrow1  (280,130) -> (520,130)
+svg> 

@@ -7,7 +7,7 @@
     "build": "tsc",
     "cli": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "test": "npm run build"
+    "test": "node test/run.cjs"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,24 @@
+svg-editor 0.1 — SVG 命令行编辑器
+输入 help 查看命令总览，输入 help create 查看参数与示例。
+试试看：init → create rect r1 20 20 120 60 steelblue → tree → save drawing.svg
+文字参数可用双引号包住；输入 # 开头的行可写脚本注释。
+
+svg> canvas 800x600 created
+  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'.
+svg> rect#r1 created
+svg> error: id already exists: r1
+svg> error: no such shape: missing
+svg> error: no such container: missing
+svg> error: not a container: r1
+svg> error: scale factor must be positive
+svg> error: unknown attribute: unsupported
+svg> error: unknown shape type: box (is the plugin loaded?)
+svg> error: invalid number: NaN
+svg> error: unterminated quoted string
+svg> rect#r1  parent=svg
+  x=10 y=20 w=100 h=50
+  fill=red
+svg> undone
+svg> svg (800x600)
+(empty canvas; try 'create rect r1 20 20 120 60 steelblue')
+svg> 

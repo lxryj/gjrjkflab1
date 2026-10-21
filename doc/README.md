@@ -1,68 +1,79 @@
 # SVG CLI 编辑器架构方案（第一版）
 
-## 模块划分
+## 架构方案
+
+### 1. 模块划分
+
+本版按实际目录划分为四个模块。`src/index.ts` 是程序入口，不单独作为业务模块；`src/Editor.ts` 是编辑器状态协调类，归入 CLI 应用层。
+
+| 模块（目录/文件） | 主要文件 | 职责 |
+|---|---|---|
+| CLI 应用层（`src/`） | `index.ts`、`Cli.ts`、`Editor.ts` | `index.ts` 建立终端 REPL；`Cli.ts` 分词、分发命令、验证参数、统一错误反馈，并处理 read/save 文件 IO；`Editor.ts` 持有当前文档和命令历史，提供文档状态检查及快照恢复。 |
+| 命令层（`src/commands/`） | `Command.ts`、`CallbackCommand.ts`、`CommandManager.ts` | 将一次编辑封装为 Command，执行前保存文档快照，失败时恢复；管理 undo/redo 栈及文档操作后的历史锁定。 |
+| 图形与文档模型层（`src/model/`） | `Shape.ts`、六种具体图形类、`Group.ts`、`SvgDocument.ts` | 定义图形对象、多态操作和容器树；维护唯一 id 索引；提供 SVG 解析和序列化。`SvgDocument` 使用 `fast-xml-parser`。 |
+| 项目文档层（`doc/`） | `README.md` | 记录架构方案、开发过程、一致性自查及质量保证手段。 |
 
 ```plantuml
 @startuml
-package cli {
-  class Cli
-  class Editor
+package "CLI 应用层: src/" {
+  [index.ts\nREPL 入口] --> [Cli.ts\n命令分发与 IO]
+  [Cli.ts\n命令分发与 IO] --> [Editor.ts\n当前文档与历史协调]
 }
-package commands {
-  abstract class Command
-  class CallbackCommand
-  class CommandManager
+package "命令层: src/commands/" {
+  [Command.ts\n命令基类与快照]
+  [CallbackCommand.ts\n编辑动作封装]
+  [CommandManager.ts\nundo/redo 栈]
+  [CallbackCommand.ts\n编辑动作封装] --|> [Command.ts\n命令基类与快照]
+  [CommandManager.ts\nundo/redo 栈] --> [Command.ts\n命令基类与快照]
 }
-package model {
-  abstract class Shape
-  class Rect
-  class Circle
-  class Ellipse
-  class Line
-  class Text
-  class Group
-  class SvgDocument
+package "图形与文档模型层: src/model/" {
+  [Shape.ts\n图形抽象]
+  [Rect / Circle / Ellipse / Line / Text]
+  [Group.ts\n组合容器]
+  [SvgDocument.ts\n文档、索引、SVG IO]
+  [Rect / Circle / Ellipse / Line / Text] --|> [Shape.ts\n图形抽象]
+  [Group.ts\n组合容器] --|> [Shape.ts\n图形抽象]
+  [Group.ts\n组合容器] o--> [Shape.ts\n图形抽象]
+  [SvgDocument.ts\n文档、索引、SVG IO] --> [Group.ts\n组合容器]
+  [SvgDocument.ts\n文档、索引、SVG IO] --> [Shape.ts\n图形抽象]
 }
-Cli --> Editor
-Cli --> CallbackCommand
-Editor --> CommandManager
-CommandManager --> Command
-Command --> Editor
-SvgDocument --> Shape
-Shape <|-- Rect
-Shape <|-- Circle
-Shape <|-- Ellipse
-Shape <|-- Line
-Shape <|-- Text
-Shape <|-- Group
-Group o-- Shape
-Cli --> SvgDocument
+[Cli.ts\n命令分发与 IO] --> [CallbackCommand.ts\n编辑动作封装]
+[Cli.ts\n命令分发与 IO] --> [SvgDocument.ts\n文档、索引、SVG IO]
+[Editor.ts\n当前文档与历史协调] --> [CommandManager.ts\nundo/redo 栈]
+[Command.ts\n命令基类与快照] --> [Editor.ts\n当前文档与历史协调]
 @enduml
 ```
 
-| 目录 | 职责 |
-|---|---|
-| `src/cli`（当前 CLI 入口类暂在 `src/Cli.ts`） | 读取命令行、分词、校验命令参数并调用编辑器领域对象；负责文件读写入口 |
-| `src/commands` | Command 接口/基类、具体命令对象与 undo/redo 历史 |
-| `src/model` | SVG 文档、图形继承体系、容器树、SVG 解析和序列化 |
-| `doc` | 架构、过程记录、一致性自查和质量说明 |
+### 2. 设计模式的选择
 
-## 设计模式
+**Command 模式（本项目的必选模式）**：`CallbackCommand` 继承 `Command`，把一次编辑动作封装为可执行、可撤销、可重做的对象；`CommandManager` 按命令对象维护 undo/redo 栈。`Command.run()` 在执行前克隆文档，成功后由管理器入栈；执行失败则恢复快照，因此单条失败命令不会留下部分状态。一次用户编辑对应一个历史单元。显示命令不入栈；`init`、`read`、`save` 和修改画布尺寸会清空历史并锁定撤销/重做，下一次成功编辑解除锁定。
 
-- **Command**：`CallbackCommand` 将一次编辑封装为命令对象；`CommandManager` 管理 undo/redo。每次编辑前克隆文档作为撤销快照，失败时恢复快照；显示操作不入栈，init/read/save/canvas 操作重置历史并锁定 undo/redo，下一次编辑解除锁定。
-- **Composite**：`Group` 与叶子 `Shape` 共享 `move`、`scale` 接口，容器把操作递归转发给子图形；文档通过根 Group 维护层级。
-- **工厂/分发**：图形类型使用 `create` 中的类型分支创建，命令名使用 `Map` 注册分发。本版将其视为扩展点；若后续增加插件，替换为注册表/provider 插槽。
+**Composite 模式**：抽象类 `Shape` 定义统一的 `move`、`scale` 和 `clone` 操作；叶子图形实现自身几何变化，`Group` 递归转发移动和缩放，并维护子节点。调用端可对组和叶子使用同一套编辑命令。
 
-## 依赖方向
+**有限的名称分派**：命令名称由 `Cli` 构造器中的 `Map` 分发；图形类型由 `Cli.create()` 中的 `switch` 创建。这两处是当前按名字分派的位置。图形工厂目前只支持六种内置类型；插件注册/provider 插槽留待后续阶段，不在本版实现。
 
-允许 CLI 层依赖 Editor、Command 与 Model；Command 层依赖 Editor/Model；Model 层只依赖 Model 内部与 XML 库。Model 不得依赖 CLI 或 Commands，避免领域对象反向耦合交互和历史实现。`Cli.ts` 目前承担 CLI 入口职责，目录实体暂未拆分，记为后续整理项。
+### 3. 依赖方向规则
 
-## 变化点假设
+下表明确规定允许的依赖方向；未列出的方向视为违反规则，应在代码评审或一致性自查中记录并处理。
 
-1. 命令集合可能扩展：由 `Cli` 的命令 Map 增加注册项，后续可抽出命令注册模块；当前暂不引入插件注册机制。
-2. 图形类型可能扩展：`Shape` 多态已提供统一操作；创建分支是唯一类型名分派处。插件阶段再抽 `ShapeProvider`，本阶段不实现 `box`。
-3. SVG 格式/外部输入可能变化：解析和序列化集中于 `SvgDocument`，可独立替换解析器或扩展兼容策略。
-4. 撤销粒度与性能可能变化：当前整文档快照实现简单可靠，文档较大时可改为命令自身保存逆操作或局部快照。
+| 发起依赖的模块 | 可以依赖 | 理由 |
+|---|---|---|
+| CLI 应用层（`src/index.ts`、`src/Cli.ts`、`src/Editor.ts`） | 命令层、图形与文档模型层、Node.js 文件/终端 API | 应用层负责接收用户输入并协调命令执行、文档操作和 IO。 |
+| 命令层（`src/commands/`） | `Editor`、图形与文档模型层 | 命令需要读取/恢复当前文档快照，模型类型用于快照和编辑状态。 |
+| 图形与文档模型层（`src/model/`） | 本层内的模型类、`fast-xml-parser` | 模型内部需要协作维护文档树；XML 库只用于 SVG 文本解析。 |
+| 项目文档层（`doc/`） | 无运行时代码依赖 | 文档描述实现和约定，不参与程序执行。 |
+
+禁止命令层依赖 CLI 命令解析器，禁止模型层依赖 CLI 或命令层，禁止图形模型反向依赖 `Editor`；这些限制避免领域模型被交互细节和撤销实现污染。`Command` 对 `Editor` 的依赖仅用于文档快照和恢复，属于命令层规则中的明确例外职责。当前未发现模型反向依赖上层的情况。
+
+### 4. 变化点假设
+
+| 未来可能变化的部分 | 发生变化的可能性及影响 | 当前预留或决定不预留的原因 |
+|---|---|---|
+| 命令集合与命令语法 | 新增命令或调整参数会影响命令注册、帮助文本和参数解析。 | 命令名集中在 `Cli` 的 `Map` 注册点；每个编辑操作通过 `CallbackCommand` 走统一历史路径。当前不拆独立命令插件框架，因为本阶段命令数量有限，抽象会增加维护成本。 |
+| 图形类型及图形创建参数 | 未来可能加入 `box` 等复合类型，类型的属性和创建流程可能不同。 | `Shape` 多态接口与 `Group` 组合语义已预留统一操作；当前在 `Cli.create()` 集中处理六种内置类型。本阶段不实现 provider 插槽或 `box`，避免提前承担插件生命周期和参数 schema 的复杂度。 |
+| SVG 格式兼容范围 | 外部文件可能包含当前未支持的 SVG 元素、属性或文本结构。 | XML 解析和序列化集中在 `SvgDocument`，便于替换解析器或增加转换策略。当前只支持六种指定图形和基本属性，不预先实现完整 SVG 规范兼容。 |
+| undo/redo 的性能与粒度 | 文档规模变大时，全量深拷贝快照会增加内存和执行开销。 | 命令基类集中保存快照，`CommandManager` 集中管理历史；未来可把快照改为命令逆操作或局部变更记录。当前选择全量快照，以简化第一版正确回滚与验证。 |
+| CLI 与其他交互界面的共用 | 未来若加入 GUI/API，输入解析和文件路径处理不应成为模型能力的一部分。 | 领域模型与 CLI 已分层；当前读写入口仍由 `Cli` 协调，尚未抽独立应用服务，因为目前只有 CLI 一种交互方式。 |
 
 ## 过程记录
 
@@ -72,13 +83,66 @@ Cli --> SvgDocument
 
 ## 一致性自查
 
-- 模块边界与方案基本一致；CLI 目前是 `src/Cli.ts`，没有单独的 `src/cli` 目录，方案中已注明。
-- Model 未依赖 CLI 或 Commands。CLI 使用命令对象及文档模型；Command 依赖 Editor 以回滚快照。
-- 命令名到实现由 Map 分发；图形名到类由 `create` 的受限分支分派，符合文档列出的两处按名字分派约定。
+### 1. 模块划分
+
+实际目录和文件与架构方案一致：CLI 应用层位于 `src/` 根目录，由 `index.ts`、`Cli.ts` 和 `Editor.ts` 组成；命令层位于 `src/commands/`；图形与文档模型层位于 `src/model/`；项目说明文档位于 `doc/`。源码职责也与模块表和 PlantUML 图相符。CLI 应用层目前直接放在 `src/` 根目录，没有单独的 `src/cli/` 子目录；架构方案已按实际结构说明这一点，因此这是已记录的目录选择，不是未记录的偏差。检查未发现其他目录或职责划分差异，也没有需要补入修订记录的偏差。
+
+### 2. 依赖方向
+
+已抽样检查 `src/` 下全部 TypeScript 文件的静态导入，包括普通 import 和类型导入。CLI 应用层依赖 `src/commands/`、`src/model/` 及 Node.js 的文件/终端 API；命令层依赖 `Editor` 和模型层；模型层只依赖本层模型以及 `fast-xml-parser`；未发现命令层依赖 CLI 命令解析器、模型层依赖 CLI/命令层或模型反向依赖 `Editor` 的情况。`Command` 对 `Editor` 的引用用于保存和恢复文档快照，符合方案为命令层明确列出的允许依赖。
+
+检查范围不包含 `node_modules/` 中第三方包源码；`dist/` 是由 `src/` 编译生成的产物，不作为独立架构模块检查。结论：本次检查未发现违反依赖方向规则的项目源码依赖。
 
 ## 质量保证手段
 
-`npm test` 执行 TypeScript 严格类型构建；命令行可用 `npm run cli` 启动。第一版已通过严格构建，并回放 init/create/in、容器移动、文本属性修改、group/undo、根级 ungroup 拒绝、未知 box 类型、read/save round-trip 和 IO 后 undo 拒绝等典型会话。`git diff --check` 通过。当前未建立自动化集成测试；后续应补测缺失 id 自动分配、跨父级分组拒绝及更多外部 SVG 格式。
+### 1. 如何确认功能是否完整
+
+以 `phase_cli_1.md` 为验收依据，按文档管理、六种内置图形、编辑操作、容器层级、显示、撤销重做和异常处理逐项核对。验证时不只看命令是否输出成功，还比较执行前后的几何数据、父子关系、同级顺序和历史状态；对失败命令检查状态是否保留，对文件读写检查 SVG 是否有效及读回后是否保留原数据。本阶段不要求实现的 `box` 不计为缺失功能，但需要验证创建它会报告未知类型。
+
+已将验证保存为独立的 `test/` 文件夹，并接入 `npm test`。该命令先按 `tsconfig.json` 严格构建，再执行 `test/cases.cjs` 中的 49 个独立场景，使用 Node.js 的 `assert/strict` 核对编译后的 `Cli.runLine()` 和 `SvgDocument`；另外启动真实 `dist/index.js` 子进程，回放固定的正常及错误命令脚本。每例使用独立会话，文件测试使用独立临时目录，运行结束后清理。
+
+| 需求范围 | 样例编号 | 验证内容与判断依据 |
+|---|---|---|
+| 文档和输入 | D01–D04、E01–E03 | 默认/浮点尺寸、中文/空格/空文本、帮助、参数格式、IO 失败及状态原子性。 |
+| 六种图形和编辑 | S01–S12、G01 | 每种类型的创建、move/scale 数值、in、样式默认值、属性白名单、递归变换、唯一和非空 id。 |
+| 层级与顺序 | G02–G11 | 同父/跨父分组、解组、子树删除、迁移环检查及 front/back，核对父子关系和原顺序。 |
+| 撤销重做 | H01–H05 及 G 系列 | 一条编辑一个历史单元、快照隔离、redo 分支、失败编辑保留历史以及 IO 后锁定。 |
+| SVG 读写和显示 | F01–F09、V01–V02 | 有效 XML、转义、基本往返、补 id、重复 id、绘制顺序、导入后再保存、损坏 XML 及 tree/show。 |
+| 实际交互入口 | I01–I02 | 回放原说明 6.1 双节点流程图和错误命令脚本，核对进程退出码、终端反馈及导出 SVG。 |
+
+本次实跑结果：**严格构建通过；49 个场景中 40 个通过、9 个失败，`npm test` 退出码为 1。** 失败场景使用与正常场景相同的验收断言，未跳过，也未当作“预期失败”转为通过。
+
+待修复项包括：Q1 跨父分组被拒绝、Q2 祖先迁入后代未被拒绝、Q3 迁入当前父容器被误拒绝、Q4 非法 canvas 参数造成部分修改、Q5 导入后保存出现重复 XML 属性、Q6 导入改变绘制顺序、Q7 tree 未显示 fill、Q8 损坏 XML 被接受以及 Q9 空 id 被接受。最小复现、期望与实际表现均保留在 [test/PROCESS.md](../test/PROCESS.md)。
+
+因此，当前证据能确认已通过场景中的行为，**尚不能确认最终功能完整**。完成验收需要修复上述问题、全量重测通过，再结合人工 SVG 视觉检查。未进行浏览器截图验收、大文档性能/内存压力测试、完整 SVG 标准兼容验证、代码覆盖率统计或跨操作系统复验，不将这些内容计为已通过。
+
+### 2. 对代码质量有信心的依据与边界
+
+| 质量保证手段 | 已有证据及其作用 |
+|---|---|
+| 严格类型构建 | `tsconfig.json` 开启 `strict`，本次编译通过，编译命令和退出码见 `test/results/build.log`。源码仍存在 `any` 和动态字段访问，因此不以编译通过代替功能验收。 |
+| 可重复的行为断言 | `test/cases.cjs` 保存需求依据、输入和独立预期值；对关键坐标、层级、历史与错误状态进行断言，失败时非零退出，便于后续修复和防止回归。 |
+| 架构与依赖检查 | A01 扫描当前全部 14 个生产 TypeScript 文件的普通及类型导入，结果通过；模型未反向依赖 CLI、命令层或 Editor。静态字符串导入检查不替代未来动态加载场景的人工评审。 |
+| 真实入口与文件验证 | I01/I02 从 stdin 回放实际 REPL；保存输出、XML 校验和读回数据断言共同验证执行链。生成的流程图可供人工预览，但未把未执行的视觉检查记为通过。 |
+| 可追溯的验证记录 | JSON 保留各例命令、实际输出、错误断言、环境、Git HEAD 和生产源码 SHA-256；记录工作区源码哈希，避免仅用提交号描述含未提交修改的被测版本。关键注释及架构文档帮助复核。 |
+| 修改检查与版本复现 | `git diff --check` 检查空白格式；`package-lock.json` 提供依赖版本锁定，可用 `npm ci` 重复安装。未声称已在其他机器独立复验。 |
+
+这些手段为类型、架构以及已覆盖行为提供证据。当前已具备持久化回归测试，但仍有 9 个失败场景，因此不能对“最终全部功能正确”给出足够信心。质量完成标准是：已知缺陷关闭、构建与全部回归检查通过，并完成 SVG 人工预览和最终复核。
+
+### 3. 测试材料的保存与复现
+
+| 材料 | 保存位置 |
+|---|---|
+| 运行方法与需求对应关系 | [test/README.md](../test/README.md) |
+| 自动化场景与执行器 | `test/cases.cjs`、`test/run.cjs` |
+| 固定 SVG 和 CLI 输入样例 | `test/fixtures/` |
+| 测试过程、最小复现及待修复项 | [test/PROCESS.md](../test/PROCESS.md) |
+| 本次逐项结果及失败原因 | [test/results/report.md](../test/results/report.md) |
+| 输入/输出、断言及版本指纹 | `test/results/report.json` |
+| 编译、实际 REPL 正常/错误回放日志 | `test/results/build.log`、`test/results/repl.log`、`test/results/errors.log` |
+| 实际导出的流程图 SVG | `test/results/flowchart.svg` |
+
+在项目根目录执行 `npm test` 会重新构建、测试并更新上述结果文件；使用 `npm run build` 可以只做编译检查。本次新增的 `test/` 是测试辅助目录，单向依赖生产代码，不改变既有生产模块职责。
 
 ## CLI 交互提示
 
