@@ -84,8 +84,18 @@ function n(s:string):number { const x=Number(s); if(!Number.isFinite(x)) throw n
 function positive(s:string,label:string):number { const x=n(s); if(x<=0) throw new Error(`${label} must be positive`); return x; }
 // 沿 candidate 的父链检查 parent；从父节点起步，因此不把自身视为后代。
 function isDescendant(parent:Shape,candidate:Shape):boolean { for(let p=candidate.parent;p;p=p.parent)if(p===parent)return true;return false; }
-// prefix 保留祖先层级的连接线；last 决定当前分支及后续缩进的样式。
-function draw(s:Shape,prefix:string,last:boolean):string { const line=`${prefix}${last?"└── ":"├── "}${s.type}#${s.id}${s.geometry()?`  ${s.geometry()}`:""}${s instanceof Group&&s.attributes["data-kind"]?` (${s.attributes["data-kind"]})`:""}`; return s.isContainer()? [line,...s.children.map((c,i)=>draw(c,prefix+(last?"    ":"│   "),i===s.children.length-1))].join("\n"):line; }
+// prefix 保留祖先层级连接线；几何和常用样式内联，便于只看树也能检查图形。
+function draw(s:Shape,prefix:string,last:boolean):string {
+  const styles = ["fill", "stroke", "stroke-width"]
+    .filter(name => s.getAttribute(name) !== undefined)
+    .map(name => `${name}=${s.getAttribute(name)}`);
+  const details = [s.geometry(), ...styles].filter(Boolean).join(" ");
+  const kind = s instanceof Group && s.getAttribute("data-kind") ? ` (${s.getAttribute("data-kind")})` : "";
+  const line = `${prefix}${last ? "└── " : "├── "}${s.type}#${s.id}${details ? `  ${details}` : ""}${kind}`;
+  return s.isContainer()
+    ? [line, ...s.children.map((child, index) => draw(child, prefix + (last ? "    " : "│   "), index === s.children.length - 1))].join("\n")
+    : line;
+}
 // 双引号中的空格属于同一个参数；active 用于保留空字符串参数（如 ""）。
 function tokenize(line:string):string[] { const out:string[]=[]; let token="",quoted=false,active=false; for(let i=0;i<line.length;i++){ const c=line[i]; if(c==='"'){quoted=!quoted;active=true;} else if(/\s/.test(c)&&!quoted){if(active){out.push(token);token="";active=false;}} else {token+=c;active=true;} } if(quoted)throw new Error("unterminated quoted string");if(active)out.push(token);return out; }
 const HELP=`SVG 编辑器命令指南

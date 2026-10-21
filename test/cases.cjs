@@ -386,10 +386,14 @@ scenario('V01', 'tree 子树过滤与 show 的父节点和属性', '5.1 tree [id
   t.assert.match(t.ok(cli, 'show c'), /parent=g#scene/);
   t.assert.match(t.ok(cli, 'show c'), /fill=red/);
 });
-scenario('V02', 'tree 必须内联关键 fill 样式', '5.1 tree 内联关键属性示例', t => {
-  const cli = t.init(['create rect r 1 2 3 4 red']);
-  t.assert.match(t.ok(cli, 'tree'), /rect#r.*fill=red/);
-}, 'Q7');
+scenario('V02', 'tree 内联 fill、stroke 和 stroke-width', '5.1 tree 内联关键属性示例', t => {
+  const cli = t.init(['create g panel', 'create rect r 1 2 3 4 red in panel',
+    'create line edge 1 2 3 4 black in panel', 'set edge stroke-width 2.5', 'set panel fill white']);
+  const tree = t.ok(cli, 'tree');
+  t.assert.match(tree, /rect#r.*x=1 y=2 w=3 h=4.*fill=red/);
+  t.assert.match(tree, /line#edge.*stroke=black.*stroke-width=2\.5/);
+  t.assert.match(tree, /g#panel.*fill=white/);
+});
 scenario('I01', '实际 REPL 回放双节点流程图并保留 SVG', '6.1 版本 A；REPL 逐行输入', t => {
   const input = t.sample('flowchart.cli');
   const result = spawnSync(process.execPath, [path.join(t.root, 'dist/index.js')], {

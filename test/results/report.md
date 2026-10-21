@@ -1,10 +1,10 @@
 # 自动化测试结果
 
-执行时间：2026-10-21 18:17:35 +08:00 至 2026-10-21 18:17:35 +08:00。
+执行时间：2026-10-21 18:41:22 +08:00 至 2026-10-21 18:41:23 +08:00。
 
 环境：Node.js v24.16.0；TypeScript 7.0.2；win32/x64。
 
-构建：pass；场景总数：49；通过：40；失败：9。
+构建：pass；场景总数：49；通过：41；失败：8。
 
 本报告由 `npm test` 生成；失败场景正常计入失败，不跳过、不标记为预期通过。详细输入、输出、断言及源码 SHA-256 见 `report.json`。
 
@@ -55,7 +55,7 @@
 | F08 | 导入保留交错类型同级及嵌套绘制顺序 | 0 SVG 树；3 read/front/back | FAIL | Q6 |
 | F09 | 格式损坏的 XML 拒绝导入且保留文档 | 3 read；2 失败不改变状态 | FAIL | Q8 |
 | V01 | tree 子树过滤与 show 的父节点和属性 | 5.1 tree [id]；5.2 show | PASS | - |
-| V02 | tree 必须内联关键 fill 样式 | 5.1 tree 内联关键属性示例 | FAIL | Q7 |
+| V02 | tree 内联 fill、stroke 和 stroke-width | 5.1 tree 内联关键属性示例 | PASS | - |
 | I01 | 实际 REPL 回放双节点流程图并保留 SVG | 6.1 版本 A；REPL 逐行输入 | PASS | - |
 | I02 | 实际 REPL 错误脚本继续执行且失败不入历史 | 2 错误约定；4.2 错误会话 | PASS | - |
 | A01 | 生产源码依赖方向符合 README 模块规则 | 架构方案 3 依赖方向规则 | PASS | - |
@@ -140,15 +140,6 @@ Expected values to be strictly deep-equal:
 The input did not match the regular expression /^error:/. Input:
 
 'read C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg (2 elements)'
-
-```
-
-### V02 tree 必须内联关键 fill 样式
-
-```text
-The input did not match the regular expression /rect#r.*fill=red/. Input:
-
-'svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4'
 
 ```
 
