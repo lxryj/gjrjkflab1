@@ -112,6 +112,7 @@ scenario('S10', '修改几何白名单、样式及文本内容', '4.1 set 白名
     t.ok(cli, `set g1 ${key} ${value}`);
     t.assert.ok(t.ok(cli, 'show g1').includes(`${key}=${value}`));
   }
+  t.assert.equal(t.ok(cli, 'set r x 001.50'), 'rect#r updated: x=1.5');
   t.ok(cli, 'set t text "新标题 v2"');
   t.assert.match(t.ok(cli, 'show t'), /新标题 v2/);
 });
@@ -131,9 +132,10 @@ scenario('S11', '不存在 id、非法属性、无效数字等失败不改文档
   }
 });
 scenario('S12', '创建时必须提供非空 id', '2 create/group 显式 id', t => {
-  const cli = t.init();
+  const cli = t.init(['create rect r 0 0 1 1', 'create circle c 0 0 1']);
   const before = t.ok(cli, 'tree');
   t.assert.match(t.run(cli, 'create g ""'), /^error:/, '空字符串不能作为有效 id');
+  t.assert.match(t.run(cli, 'group "" r c'), /^error:/, '组名也必须是非空 id');
   t.assert.equal(t.ok(cli, 'tree'), before);
 }, 'Q9');
 scenario('G01', '嵌套容器递归移动、缩放所有后代', '2.1 Composite；3 move/scale', t => {
@@ -378,6 +380,14 @@ scenario('F09', '格式损坏的 XML 拒绝导入且保留文档', '3 read；2 �
   t.assert.match(t.run(cli, `read "${t.fixture('invalid.svg')}"`), /^error:/);
   t.assert.equal(t.ok(cli, 'tree'), before);
 }, 'Q8');
+scenario('F10', '自动 id 序号限定于单次 SVG 导入', '2 自动补 id 不跨文档共享状态', t => {
+  const xml = '<svg xmlns="http://www.w3.org/2000/svg"><rect/><circle/></svg>';
+  const first = t.SvgDocument.fromSvg(xml);
+  const second = t.SvgDocument.fromSvg(xml);
+  const ids = document => document.all().map(shape => shape.id);
+  t.assert.deepEqual(ids(first), ['rect1', 'circle2']);
+  t.assert.deepEqual(ids(second), ['rect1', 'circle2']);
+});
 scenario('V01', 'tree 子树过滤与 show 的父节点和属性', '5.1 tree [id]；5.2 show', t => {
   const cli = t.init(['create g scene', 'create circle c 10 20 30 red in scene', 'create g outside']);
   const tree = t.ok(cli, 'tree scene');
@@ -441,7 +451,8 @@ scenario('A01', '生产源码依赖方向符合 README 模块规则', '架构方
       if (name.startsWith('src/model/')) t.assert.ok(target.startsWith('src/model/') || target === 'fast-xml-parser', `${name} -> ${target}`);
       else if (name.startsWith('src/commands/')) t.assert.ok(target.startsWith('src/commands/') || target.startsWith('src/model/') || target === 'src/Editor', `${name} -> ${target}`);
       else t.assert.ok(target.startsWith('src/commands/') || target.startsWith('src/model/') ||
-        ['src/Cli', 'src/Editor', 'node:fs', 'node:path', 'node:readline'].includes(target), `${name} -> ${target}`);
+        ['src/Cli', 'src/Editor', 'src/CommandLineTokenizer', 'src/ShapeTreeFormatter',
+          'node:fs', 'node:path', 'node:readline'].includes(target), `${name} -> ${target}`);
     }
   }
   t.note('static imports including type imports', edges);

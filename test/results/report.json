@@ -1,6 +1,6 @@
 {
-  "startedAt": "2026-10-21 18:41:22 +08:00",
-  "finishedAt": "2026-10-21 18:41:23 +08:00",
+  "startedAt": "2026-10-27 21:16:04 +08:00",
+  "finishedAt": "2026-10-27 21:16:04 +08:00",
   "environment": {
     "node": "v24.16.0",
     "platform": "win32",
@@ -8,22 +8,26 @@
     "typescript": "7.0.2",
     "fastXmlParser": "5.11.2"
   },
-  "gitHead": "d84934709c1d0b44765ed1b912f9974d872e1c96",
+  "gitHead": "0fcd5682f03addf006cbb6781a0cd4500cf6a3a3",
   "sourceHashes": {
-    "src/Cli.ts": "c122bd90cb4485ad9da54888a9a81e4b85331d81df47763de2ee1aecd2bd463e",
+    "src/Cli.ts": "06167e2928472750f8d7808536cf937763485314f82b7b62ba79f274dbdaa7d4",
+    "src/CommandLineTokenizer.ts": "f5bdb0fde41a313abbab1896c93ce207b8b21c44013cf7b7fc73862c15e04985",
     "src/commands/CallbackCommand.ts": "5ab48056dd1db5a80d241a92b9a5e677e68e3c065f0e691cd27b77282d79a25a",
     "src/commands/Command.ts": "d5997377093376dce6725bca417bb71bfc3c52473ab040c24d678eb4534eb033",
     "src/commands/CommandManager.ts": "99b67fab0a493724d50ced0de064b4d356e0ae03dcd71dbb4ebf1e3c95511a7c",
-    "src/Editor.ts": "f921400e5182b9257537c41a64f790bd5a9c2bbc532813736ddbb1d057cd15b4",
+    "src/Editor.ts": "87375c3b408318416c9eada97e3c0158698f0f5ff1372d48a919e6e9f7ba532a",
     "src/index.ts": "f0742d51799f70b599bcd49b780b3a5cfb29805d14544b353b809119244df325",
-    "src/model/Circle.ts": "9963d8dcf13cd4804b0b60c53f1985c5091e91aeeb7eb9b6d454096b95a08a2e",
-    "src/model/Ellipse.ts": "7ac2bc33e14c0c4d46c32c8a47ab4cd120fa1fb5591493a9455944a61ccd28d4",
-    "src/model/Group.ts": "dbaea73e7123a563353ca8b8844e760c3697ea99ef4dcd69022599e3c31f1ccc",
-    "src/model/Line.ts": "f11a29f2a59003c8705587f697ead2ef2339efcd84f02c9b77e11a283cac92d6",
-    "src/model/Rect.ts": "fcf35f51d75c4da9881aa0c6c45b4b7790bbae8bdfaf97e3a6ef79239efa67ee",
-    "src/model/Shape.ts": "e761e752eeb71cc10a605b633410da9ab888039e7a4ffa95d6cf87243e527ef2",
-    "src/model/SvgDocument.ts": "b737768350395a3df379a6bddb8f4adac995727a72364fe085510ef2512387e6",
-    "src/model/Text.ts": "22a94c93850c397d85c55a8608b6821496b988694be099d95513360bb8f0fd9b"
+    "src/model/Circle.ts": "2dda7c3a413e376979c6920bcf8e40280f9599ac1c81addc4f6583f050818557",
+    "src/model/Ellipse.ts": "00917c7c2c09fa1b2d8f731c0530d9ddb4e8bca6c9fc6aa771e3d7787239783c",
+    "src/model/Group.ts": "79a7bc9ed092d47c62e159e60115fbbb74f07e462ee6747a09d2f1f0c335d3ed",
+    "src/model/Line.ts": "f7ab4a71e6a84921a89e35eb3b0705fbb864e54a8d09ea66d1485503048fd536",
+    "src/model/Rect.ts": "3863543c2f1807e12f073bcd787746472601467b13ac26dbc01aaf5fdb6aaaf5",
+    "src/model/Shape.ts": "c04d69d76baa7cf125687466f43f21c91cf28790d8ecc22dd58536a8058df92d",
+    "src/model/ShapeFactory.ts": "46f948c497431b818d2846bd90038cd89f9364a8af6445303d1e2246cbf7a15e",
+    "src/model/SvgDocument.ts": "b51734cbbf4f430b4c58d16de87bd6885d66e89442ae7154af815b75674dfdcf",
+    "src/model/SvgNumber.ts": "540e31cc85923f635dafbb9d9f6d622b62376a9a072059b688ce44c6bf5d955c",
+    "src/model/Text.ts": "2277b6e1427b06aaa66b059b22df189c0196cf5a291e56c032574b9ec40608cb",
+    "src/ShapeTreeFormatter.ts": "e0f3cf67538294517a69150b55bf6ff52f3ff1eb1a0300937b73ee848893187d"
   },
   "build": {
     "status": "pass",
@@ -51,7 +55,7 @@
           "output": "SVG 编辑器命令指南\n\n快速开始：\n  init                         新建默认 800x600 画布\n  create rect r1 20 20 120 60 steelblue\n  tree                         查看图形结构\n  save drawing.svg             保存 SVG，可用浏览器打开预览\n\n常用命令：\n  文档：init [w] [h] | read <file.svg> | save [file.svg] | canvas [w] [h]\n  创建：create rect|circle|ellipse|line|text|g <id> ... [in <containerId>]\n  编辑：move <id> <dx> <dy> | scale <id> <factor> | set <id> <attr> <value> | delete <id>\n  组合：group <newGid> <id1> <id2>... | ungroup <gid> | addto <gid> <id> | front/back <id>\n  查看：tree [id] | show <id> | help [command]\n  历史：undo | redo\n\n文字内容请用双引号包裹；命令行也支持 # 开头的注释行。\n输入 'help <command>' 查看该命令的参数和示例。"
         }
       ],
-      "durationMs": 0.74
+      "durationMs": 0.76
     },
     {
       "id": "D02",
@@ -85,7 +89,7 @@
           "output": "canvas 1024x768"
         }
       ],
-      "durationMs": 0.6
+      "durationMs": 0.53
     },
     {
       "id": "D03",
@@ -170,7 +174,7 @@
         },
         {
           "command": "help group",
-          "output": "group <newGid> <id1> <id2>...\n把同一父容器下已有图形按原顺序收编。\n示例：group cluster card title"
+          "output": "group <newGid> <id1> <id2>...\n把图形按原顺序收编到新容器。\n示例：group cluster card title"
         },
         {
           "command": "help ungroup",
@@ -217,7 +221,7 @@
           "output": "error: unknown command: unknown-command. Type 'help' to list available commands."
         }
       ],
-      "durationMs": 0.38
+      "durationMs": 0.35
     },
     {
       "id": "S01",
@@ -251,7 +255,7 @@
           "output": "rect#r  parent=svg\n  x=6 y=0 w=20 h=40\n  fill=red"
         }
       ],
-      "durationMs": 0.45
+      "durationMs": 0.44
     },
     {
       "id": "S02",
@@ -319,7 +323,7 @@
           "output": "ellipse#e  parent=svg\n  cx=14 cy=8 rx=14 ry=16\n  fill=green"
         }
       ],
-      "durationMs": 0.3
+      "durationMs": 0.36
     },
     {
       "id": "S04",
@@ -353,7 +357,7 @@
           "output": "line#l  parent=svg\n  (6,0) -> (22,16)\n  stroke=black"
         }
       ],
-      "durationMs": 0.3
+      "durationMs": 0.37
     },
     {
       "id": "S05",
@@ -421,7 +425,7 @@
           "output": "g#g1  parent=svg\n  "
         }
       ],
-      "durationMs": 0.45
+      "durationMs": 0.3
     },
     {
       "id": "S07",
@@ -487,7 +491,7 @@
           "output": "g#g1  parent=g#parent\n  "
         }
       ],
-      "durationMs": 0.49
+      "durationMs": 0.53
     },
     {
       "id": "S08",
@@ -509,15 +513,15 @@
           "output": "line#l created"
         },
         {
-          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-qjmx2I\\export.svg\"",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-qjmx2I\\export.svg (2 elements)"
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-zeccyR\\export.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-zeccyR\\export.svg (2 elements)"
         },
         {
           "label": "file: export.svg",
           "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"600\" viewBox=\"0 0 800 600\">\n  <rect id=\"r\" x=\"0\" y=\"0\" width=\"10\" height=\"20\"/>\n  <line id=\"l\" x1=\"0\" y1=\"0\" x2=\"10\" y2=\"20\"/>\n</svg>\n"
         }
       ],
-      "durationMs": 2.9
+      "durationMs": 3.8
     },
     {
       "id": "S09",
@@ -563,7 +567,7 @@
           "output": "g#Box  parent=svg\n  "
         }
       ],
-      "durationMs": 0.52
+      "durationMs": 0.66
     },
     {
       "id": "S10",
@@ -753,6 +757,10 @@
           "output": "g#g1  parent=svg\n  \n  fill=#abcdef\n  stroke=black\n  stroke-width=2.5"
         },
         {
+          "command": "set r x 001.50",
+          "output": "rect#r updated: x=1.5"
+        },
+        {
           "command": "set t text \"新标题 v2\"",
           "output": "text#t updated: text=\"新标题 v2\""
         },
@@ -761,7 +769,7 @@
           "output": "text#t  parent=svg\n  (12.5,12.5) \"新标题 v2\""
         }
       ],
-      "durationMs": 1.03
+      "durationMs": 1.68
     },
     {
       "id": "S11",
@@ -863,37 +871,45 @@
           "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4 fill=red"
         }
       ],
-      "durationMs": 0.61
+      "durationMs": 0.67
     },
     {
       "id": "S12",
       "name": "创建时必须提供非空 id",
       "requirement": "2 create/group 显式 id",
       "issue": "Q9",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "command": "init",
           "output": "canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'."
         },
         {
+          "command": "create rect r 0 0 1 1",
+          "output": "rect#r created"
+        },
+        {
+          "command": "create circle c 0 0 1",
+          "output": "circle#c created"
+        },
+        {
           "command": "tree",
-          "output": "svg (800x600)\n(empty canvas; try 'create rect r1 20 20 120 60 steelblue')"
+          "output": "svg (800x600)\n├── rect#r  x=0 y=0 w=1 h=1\n└── circle#c  cx=0 cy=0 r=1"
         },
         {
           "command": "create g \"\"",
-          "output": "g# created"
+          "output": "error: id must not be empty"
+        },
+        {
+          "command": "group \"\" r c",
+          "output": "error: id must not be empty"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── rect#r  x=0 y=0 w=1 h=1\n└── circle#c  cx=0 cy=0 r=1"
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "空字符串不能作为有效 id",
-        "stack": "AssertionError [ERR_ASSERTION]: 空字符串不能作为有效 id\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:136:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": "g# created",
-        "expected": {},
-        "operator": "match"
-      },
-      "durationMs": 0.68
+      "durationMs": 0.57
     },
     {
       "id": "G01",
@@ -943,7 +959,7 @@
           "output": "g#inner  parent=g#outer\n  "
         }
       ],
-      "durationMs": 0.29
+      "durationMs": 0.31
     },
     {
       "id": "G02",
@@ -1005,7 +1021,7 @@
           "output": "svg (800x600)\n├── g#pair\n│   ├── rect#a  x=0 y=0 w=1 h=1\n│   └── text#c  (0,0) \"c\"\n└── circle#b  cx=0 cy=0 r=1"
         }
       ],
-      "durationMs": 0.63
+      "durationMs": 0.5
     },
     {
       "id": "G03",
@@ -1039,7 +1055,7 @@
           "output": "svg (800x600)\n└── g#outer\n    └── g#inner"
         }
       ],
-      "durationMs": 0.35
+      "durationMs": 0.43
     },
     {
       "id": "G04",
@@ -1105,7 +1121,7 @@
           "output": "svg (800x600)\n└── g#outer\n    ├── rect#first  x=0 y=0 w=1 h=1\n    ├── g#inner\n    │   ├── rect#a  x=1 y=2 w=3 h=4\n    │   └── circle#b  cx=5 cy=6 r=7\n    └── text#last  (0,0) \"last\""
         }
       ],
-      "durationMs": 1.05
+      "durationMs": 1.12
     },
     {
       "id": "G05",
@@ -1135,7 +1151,7 @@
           "output": "error: no such shape: outer"
         }
       ],
-      "durationMs": 0.33
+      "durationMs": 0.25
     },
     {
       "id": "G06",
@@ -1185,7 +1201,7 @@
           "output": "svg (800x600)\n├── g#a\n│   └── rect#r  x=1 y=2 w=3 h=4\n└── g#b"
         }
       ],
-      "durationMs": 0.38
+      "durationMs": 0.34
     },
     {
       "id": "G07",
@@ -1239,7 +1255,7 @@
           "output": "└── g#parent\n    ├── g#b\n    ├── g#c\n    └── g#a"
         }
       ],
-      "durationMs": 0.49
+      "durationMs": 0.47
     },
     {
       "id": "G08",
@@ -1301,14 +1317,14 @@
           "output": "error: no such shape: r"
         }
       ],
-      "durationMs": 0.39
+      "durationMs": 0.44
     },
     {
       "id": "G09",
       "name": "跨父容器 group 支持收编并可整体撤销",
       "requirement": "3 group 从各自原父容器摘出",
       "issue": "Q1",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "command": "init",
@@ -1336,25 +1352,33 @@
         },
         {
           "command": "group pair r c",
-          "output": "error: group targets must have the same parent"
+          "output": "g#pair created with 2 children"
+        },
+        {
+          "command": "show r",
+          "output": "rect#r  parent=g#pair\n  x=1 y=2 w=3 h=4"
+        },
+        {
+          "command": "show c",
+          "output": "circle#c  parent=g#pair\n  cx=5 cy=6 r=7"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n├── g#a\n│   └── rect#r  x=1 y=2 w=3 h=4\n└── g#b\n    └── circle#c  cx=5 cy=6 r=7"
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "Expected command success: group pair r c\nerror: group targets must have the same parent",
-        "stack": "AssertionError [ERR_ASSERTION]: Expected command success: group pair r c\nerror: group targets must have the same parent\n    at Object.ok (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:69:16)\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:215:5)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": false,
-        "expected": true,
-        "operator": "=="
-      },
-      "durationMs": 0.42
+      "durationMs": 0.3
     },
     {
       "id": "G10",
       "name": "addto 必须拒绝把祖先放入其后代",
       "requirement": "2 树形结构；3 addto",
       "issue": "Q2",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "command": "init",
@@ -1374,25 +1398,21 @@
         },
         {
           "command": "addto inner outer",
-          "output": "g#outer moved into g#inner"
+          "output": "error: cannot move container into its own descendant: inner"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#outer\n    └── g#inner"
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "祖先迁入后代必须被拒绝",
-        "stack": "AssertionError [ERR_ASSERTION]: 祖先迁入后代必须被拒绝\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:225:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": "g#outer moved into g#inner",
-        "expected": {},
-        "operator": "match"
-      },
-      "durationMs": 0.33
+      "durationMs": 0.24
     },
     {
       "id": "G11",
       "name": "addto 到当前父容器时将节点排到末尾",
       "requirement": "3 addto 作为最后一个子节点",
       "issue": "Q3",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "command": "init",
@@ -1412,18 +1432,14 @@
         },
         {
           "command": "addto parent a",
-          "output": "error: cannot move container into its own descendant: parent"
+          "output": "rect#a moved into g#parent"
+        },
+        {
+          "command": "tree parent",
+          "output": "└── g#parent\n    ├── circle#b  cx=0 cy=0 r=1\n    └── rect#a  x=0 y=0 w=1 h=1"
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "Expected command success: addto parent a\nerror: cannot move container into its own descendant: parent",
-        "stack": "AssertionError [ERR_ASSERTION]: Expected command success: addto parent a\nerror: cannot move container into its own descendant: parent\n    at Object.ok (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:69:16)\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:230:5)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": false,
-        "expected": true,
-        "operator": "=="
-      },
-      "durationMs": 0.38
+      "durationMs": 0.27
     },
     {
       "id": "H01",
@@ -1465,7 +1481,7 @@
           "output": "error: no such shape: r"
         }
       ],
-      "durationMs": 0.31
+      "durationMs": 0.77
     },
     {
       "id": "H02",
@@ -1503,7 +1519,7 @@
           "output": "rect#r  parent=svg\n  x=1 y=2 w=3 h=4\n  fill=red"
         }
       ],
-      "durationMs": 0.39
+      "durationMs": 0.29
     },
     {
       "id": "H03",
@@ -1541,7 +1557,7 @@
           "output": "rect#r  parent=svg\n  x=11 y=22 w=3 h=4"
         }
       ],
-      "durationMs": 0.45
+      "durationMs": 0.28
     },
     {
       "id": "H04",
@@ -1619,8 +1635,8 @@
           "output": "g#checkpoint deleted"
         },
         {
-          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-wwrz5f\\history.svg\"",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-wwrz5f\\history.svg (0 elements)"
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-dnB9iu\\history.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-dnB9iu\\history.svg (0 elements)"
         },
         {
           "command": "undo",
@@ -1651,8 +1667,8 @@
           "output": "g#checkpoint deleted"
         },
         {
-          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-wwrz5f\\history.svg\"",
-          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-wwrz5f\\history.svg (0 elements)"
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-dnB9iu\\history.svg\"",
+          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-dnB9iu\\history.svg (0 elements)"
         },
         {
           "command": "undo",
@@ -1683,7 +1699,7 @@
           "output": "g#checkpoint deleted"
         }
       ],
-      "durationMs": 3.73
+      "durationMs": 4.11
     },
     {
       "id": "H05",
@@ -1741,14 +1757,14 @@
           "output": "rect#r  parent=svg\n  x=31 y=2 w=3 h=4"
         }
       ],
-      "durationMs": 0.41
+      "durationMs": 0.33
     },
     {
       "id": "E01",
       "name": "canvas 第二参数非法时尺寸与历史都不改变",
       "requirement": "2 命令失败不改变状态",
       "issue": "Q4",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "command": "init",
@@ -1768,18 +1784,18 @@
         },
         {
           "command": "canvas",
-          "output": "canvas 100x600"
+          "output": "canvas 800x600"
+        },
+        {
+          "command": "undo",
+          "output": "undone"
+        },
+        {
+          "command": "show retained",
+          "output": "error: no such shape: retained"
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'canvas 100x600'\n- 'canvas 800x600'\n          ^\n",
-        "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'canvas 100x600'\n- 'canvas 800x600'\n          ^\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:278:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": "canvas 100x600",
-        "expected": "canvas 800x600",
-        "operator": "strictEqual"
-      },
-      "durationMs": 0.87
+      "durationMs": 0.31
     },
     {
       "id": "E02",
@@ -1805,12 +1821,12 @@
           "output": "svg (800x600)\n└── rect#r  x=11 y=22 w=3 h=4"
         },
         {
-          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-w5Dky0\\absent\\file.svg\"",
-          "output": "error: cannot read file: C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-w5Dky0\\absent\\file.svg"
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-WPL5h5\\absent\\file.svg\"",
+          "output": "error: cannot read file: C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-WPL5h5\\absent\\file.svg"
         },
         {
-          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-w5Dky0\\absent\\file.svg\"",
-          "output": "error: cannot write file: C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-w5Dky0\\absent\\file.svg"
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-WPL5h5\\absent\\file.svg\"",
+          "output": "error: cannot write file: C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-WPL5h5\\absent\\file.svg"
         },
         {
           "command": "tree",
@@ -1825,7 +1841,7 @@
           "output": "rect#r  parent=svg\n  x=1 y=2 w=3 h=4"
         }
       ],
-      "durationMs": 0.64
+      "durationMs": 0.55
     },
     {
       "id": "E03",
@@ -1983,7 +1999,7 @@
           "output": "svg (800x600)\n└── rect#r  x=1 y=2 w=3 h=4"
         }
       ],
-      "durationMs": 0.53
+      "durationMs": 0.47
     },
     {
       "id": "F01",
@@ -2005,15 +2021,15 @@
           "output": "rect#r created"
         },
         {
-          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-y9iW1t\\export.svg\"",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-y9iW1t\\export.svg (2 elements)"
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-Sz3ZT8\\export.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-Sz3ZT8\\export.svg (2 elements)"
         },
         {
           "label": "file: export.svg",
           "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"600\" viewBox=\"0 0 800 600\">\n  <text id=\"title\" x=\"10\" y=\"20\">A &amp; B &lt; C</text>\n  <rect id=\"r\" x=\"0\" y=\"0\" width=\"1\" height=\"1\" fill=\"red\"/>\n</svg>\n"
         }
       ],
-      "durationMs": 4.05
+      "durationMs": 3.01
     },
     {
       "id": "F02",
@@ -2043,12 +2059,12 @@
           "output": "svg (800x600)\n└── g#scene\n    ├── rect#r  x=1 y=2 w=3 h=4 fill=red\n    └── text#t  (5,6) \"中文 & test\""
         },
         {
-          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-KXn7TQ\\basic.svg\"",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-KXn7TQ\\basic.svg (3 elements)"
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-g8eCEn\\basic.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-g8eCEn\\basic.svg (3 elements)"
         },
         {
-          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-KXn7TQ\\basic.svg\"",
-          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-KXn7TQ\\basic.svg (3 elements)"
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-g8eCEn\\basic.svg\"",
+          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-g8eCEn\\basic.svg (3 elements)"
         },
         {
           "command": "tree",
@@ -2056,10 +2072,10 @@
         },
         {
           "command": "show t",
-          "output": "text#t  parent=g#scene\n  (5,6) \"中文 & test\"\n  x=5\n  y=6"
+          "output": "text#t  parent=g#scene\n  (5,6) \"中文 & test\""
         }
       ],
-      "durationMs": 2.7
+      "durationMs": 3.16
     },
     {
       "id": "F03",
@@ -2077,8 +2093,8 @@
           "output": "rect#r created"
         },
         {
-          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-T6ut8B\\a drawing.svg\"",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-T6ut8B\\a drawing.svg (1 elements)"
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NrNvTJ\\a drawing.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NrNvTJ\\a drawing.svg (1 elements)"
         },
         {
           "command": "move r 10 20",
@@ -2086,11 +2102,11 @@
         },
         {
           "command": "save",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-T6ut8B\\a drawing.svg (1 elements)"
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NrNvTJ\\a drawing.svg (1 elements)"
         },
         {
-          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-T6ut8B\\a drawing.svg\"",
-          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-T6ut8B\\a drawing.svg (1 elements)"
+          "command": "read \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NrNvTJ\\a drawing.svg\"",
+          "output": "read C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NrNvTJ\\a drawing.svg (1 elements)"
         },
         {
           "command": "set r fill red",
@@ -2098,7 +2114,7 @@
         },
         {
           "command": "save",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-T6ut8B\\a drawing.svg (1 elements)"
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-NrNvTJ\\a drawing.svg (1 elements)"
         },
         {
           "command": "init",
@@ -2109,7 +2125,7 @@
           "output": "error: usage: save <file.svg> (no previous read path)\n  Hint: type 'help <command>' to see command syntax and an example."
         }
       ],
-      "durationMs": 4.49
+      "durationMs": 5.21
     },
     {
       "id": "F04",
@@ -2124,7 +2140,7 @@
         },
         {
           "command": "show rect1",
-          "output": "rect#rect1  parent=svg\n  x=10 y=10 w=10 h=10\n  x=10\n  y=10\n  width=10\n  height=10"
+          "output": "rect#rect1  parent=svg\n  x=10 y=10 w=10 h=10"
         },
         {
           "label": "allocated ids",
@@ -2136,7 +2152,7 @@
           ]
         }
       ],
-      "durationMs": 1.03
+      "durationMs": 2.46
     },
     {
       "id": "F05",
@@ -2170,7 +2186,7 @@
           "output": "undone"
         }
       ],
-      "durationMs": 0.53
+      "durationMs": 1.49
     },
     {
       "id": "F06",
@@ -2185,21 +2201,21 @@
         },
         {
           "command": "show r2",
-          "output": "rect#r2  parent=g#g1\n  x=0 y=0 w=10 h=10\n  x=0\n  y=0\n  width=10\n  height=10"
+          "output": "rect#r2  parent=g#g1\n  x=0 y=0 w=10 h=10"
         },
         {
           "command": "show e1",
-          "output": "ellipse#e1  parent=svg\n  cx=1 cy=2 rx=3 ry=4\n  cx=1\n  cy=2\n  rx=3\n  ry=4"
+          "output": "ellipse#e1  parent=svg\n  cx=1 cy=2 rx=3 ry=4"
         }
       ],
-      "durationMs": 0.65
+      "durationMs": 0.67
     },
     {
       "id": "F07",
       "name": "导入后移动、保存应保持 XML 有效且坐标不回退",
       "requirement": "3 read/move/save 往返",
       "issue": "Q5",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "command": "read \"C:\\Users\\25049\\gjrjkf\\test\\fixtures\\other.svg\"",
@@ -2210,48 +2226,26 @@
           "output": "rect#r2 moved by (10,20)"
         },
         {
-          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-Y5yDFp\\export.svg\"",
-          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-Y5yDFp\\export.svg (7 elements)"
+          "command": "save \"C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-X1CaRv\\export.svg\"",
+          "output": "saved to C:\\Users\\25049\\AppData\\Local\\Temp\\svg-cli-test-X1CaRv\\export.svg (7 elements)"
         },
         {
           "label": "file: export.svg",
-          "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\">\n  <rect id=\"rect1\" x=\"0\" y=\"0\" width=\"400\" height=\"300\" x=\"0\" y=\"0\" width=\"400\" height=\"300\" fill=\"#ffffff\"/>\n  <text id=\"t1\" x=\"10\" y=\"290\" x=\"10\" y=\"290\">imported</text>\n  <circle id=\"c1\" cx=\"50\" cy=\"50\" r=\"10\" cx=\"50\" cy=\"50\" r=\"10\"/>\n  <g id=\"g1\" rect=\"[object Object]\" circle=\"[object Object]\">\n    <rect id=\"r2\" x=\"10\" y=\"20\" width=\"10\" height=\"10\" x=\"0\" y=\"0\" width=\"10\" height=\"10\"/>\n    <circle id=\"c2\" cx=\"5\" cy=\"5\" r=\"2\" cx=\"5\" cy=\"5\" r=\"2\"/>\n  </g>\n  <ellipse id=\"e1\" cx=\"1\" cy=\"2\" rx=\"3\" ry=\"4\" cx=\"1\" cy=\"2\" rx=\"3\" ry=\"4\"/>\n</svg>\n"
+          "actual": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\" viewBox=\"0 0 400 300\">\n  <rect id=\"rect1\" x=\"0\" y=\"0\" width=\"400\" height=\"300\" fill=\"#ffffff\"/>\n  <text id=\"t1\" x=\"10\" y=\"290\">imported</text>\n  <circle id=\"c1\" cx=\"50\" cy=\"50\" r=\"10\"/>\n  <g id=\"g1\">\n    <rect id=\"r2\" x=\"10\" y=\"20\" width=\"10\" height=\"10\"/>\n    <circle id=\"c2\" cx=\"5\" cy=\"5\" r=\"2\"/>\n  </g>\n  <ellipse id=\"e1\" cx=\"1\" cy=\"2\" rx=\"3\" ry=\"4\"/>\n</svg>\n"
         },
         {
           "label": "XML validator",
-          "actual": {
-            "err": {
-              "code": "InvalidAttr",
-              "msg": "Attribute 'x' is repeated.",
-              "line": 3,
-              "col": 57
-            }
-          }
+          "actual": true
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "导入后保存不得输出重复几何属性\n+ actual - expected\n\n+ {\n+   err: {\n+     code: 'InvalidAttr',\n+     col: 57,\n+     line: 3,\n+     msg: \"Attribute 'x' is repeated.\"\n+   }\n+ }\n- true\n",
-        "stack": "AssertionError [ERR_ASSERTION]: 导入后保存不得输出重复几何属性\n+ actual - expected\n\n+ {\n+   err: {\n+     code: 'InvalidAttr',\n+     col: 57,\n+     line: 3,\n+     msg: \"Attribute 'x' is repeated.\"\n+   }\n+ }\n- true\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:362:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": {
-          "err": {
-            "code": "InvalidAttr",
-            "msg": "Attribute 'x' is repeated.",
-            "line": 3,
-            "col": 57
-          }
-        },
-        "expected": true,
-        "operator": "strictEqual"
-      },
-      "durationMs": 3.2
+      "durationMs": 3.12
     },
     {
       "id": "F08",
       "name": "导入保留交错类型同级及嵌套绘制顺序",
       "requirement": "0 SVG 树；3 read/front/back",
       "issue": "Q6",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "label": "input ordered.svg",
@@ -2261,8 +2255,8 @@
           "label": "actual root order",
           "actual": [
             "first",
-            "last",
             "middle",
+            "last",
             "nested"
           ]
         },
@@ -2270,37 +2264,19 @@
           "label": "actual nested order",
           "actual": [
             "inner-first",
-            "inner-last",
-            "inner-middle"
+            "inner-middle",
+            "inner-last"
           ]
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    'first',\n+   'last',\n    'middle',\n-   'last',\n    'nested'\n  ]\n",
-        "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    'first',\n+   'last',\n    'middle',\n-   'last',\n    'nested'\n  ]\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:371:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": [
-          "first",
-          "last",
-          "middle",
-          "nested"
-        ],
-        "expected": [
-          "first",
-          "middle",
-          "last",
-          "nested"
-        ],
-        "operator": "deepStrictEqual"
-      },
-      "durationMs": 0.95
+      "durationMs": 1.51
     },
     {
       "id": "F09",
       "name": "格式损坏的 XML 拒绝导入且保留文档",
       "requirement": "3 read；2 失败不改变状态",
       "issue": "Q8",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "command": "init",
@@ -2316,18 +2292,23 @@
         },
         {
           "command": "read \"C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg\"",
-          "output": "read C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg (2 elements)"
+          "output": "error: cannot read file: C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg"
+        },
+        {
+          "command": "tree",
+          "output": "svg (800x600)\n└── g#retained"
         }
       ],
-      "error": {
-        "name": "AssertionError",
-        "message": "The input did not match the regular expression /^error:/. Input:\n\n'read C:\\\\Users\\\\25049\\\\gjrjkf\\\\test\\\\fixtures\\\\invalid.svg (2 elements)'\n",
-        "stack": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^error:/. Input:\n\n'read C:\\\\Users\\\\25049\\\\gjrjkf\\\\test\\\\fixtures\\\\invalid.svg (2 elements)'\n\n    at Object.run (C:\\Users\\25049\\gjrjkf\\test\\cases.cjs:378:12)\n    at Object.<anonymous> (C:\\Users\\25049\\gjrjkf\\test\\run.cjs:79:20)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object..js (node:internal/modules/cjs/loader:1985:10)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
-        "actual": "read C:\\Users\\25049\\gjrjkf\\test\\fixtures\\invalid.svg (2 elements)",
-        "expected": {},
-        "operator": "match"
-      },
-      "durationMs": 0.95
+      "durationMs": 2.03
+    },
+    {
+      "id": "F10",
+      "name": "自动 id 序号限定于单次 SVG 导入",
+      "requirement": "2 自动补 id 不跨文档共享状态",
+      "issue": null,
+      "status": "pass",
+      "steps": [],
+      "durationMs": 0.39
     },
     {
       "id": "V01",
@@ -2365,7 +2346,7 @@
           "output": "circle#c  parent=g#scene\n  cx=10 cy=20 r=30\n  fill=red"
         }
       ],
-      "durationMs": 0.52
+      "durationMs": 0.32
     },
     {
       "id": "V02",
@@ -2403,7 +2384,7 @@
           "output": "svg (800x600)\n└── g#panel  fill=white\n    ├── rect#r  x=1 y=2 w=3 h=4 fill=red\n    └── line#edge  (1,2) -> (3,4) stroke=black stroke-width=2.5"
         }
       ],
-      "durationMs": 0.72
+      "durationMs": 0.37
     },
     {
       "id": "I01",
@@ -2425,7 +2406,7 @@
           "actual": ""
         }
       ],
-      "durationMs": 86.01
+      "durationMs": 93.41
     },
     {
       "id": "I02",
@@ -2443,7 +2424,7 @@
           "actual": "svg-editor 0.1 — SVG 命令行编辑器\n输入 help 查看命令总览，输入 help create 查看参数与示例。\n试试看：init → create rect r1 20 20 120 60 steelblue → tree → save drawing.svg\n文字参数可用双引号包住；输入 # 开头的行可写脚本注释。\n\nsvg> canvas 800x600 created\n  Next: create a shape, inspect it with 'tree', then export with 'save drawing.svg'.\nsvg> rect#r1 created\nsvg> error: id already exists: r1\nsvg> error: no such shape: missing\nsvg> error: no such container: missing\nsvg> error: not a container: r1\nsvg> error: scale factor must be positive\nsvg> error: unknown attribute: unsupported\nsvg> error: unknown shape type: box (is the plugin loaded?)\nsvg> error: invalid number: NaN\nsvg> error: unterminated quoted string\nsvg> rect#r1  parent=svg\n  x=10 y=20 w=100 h=50\n  fill=red\nsvg> undone\nsvg> svg (800x600)\n(empty canvas; try 'create rect r1 20 20 120 60 steelblue')\nsvg> "
         }
       ],
-      "durationMs": 68.16
+      "durationMs": 81.15
     },
     {
       "id": "A01",
@@ -2456,6 +2437,7 @@
           "label": "source files inspected",
           "actual": [
             "src/Cli.ts",
+            "src/CommandLineTokenizer.ts",
             "src/commands/CallbackCommand.ts",
             "src/commands/Command.ts",
             "src/commands/CommandManager.ts",
@@ -2467,8 +2449,11 @@
             "src/model/Line.ts",
             "src/model/Rect.ts",
             "src/model/Shape.ts",
+            "src/model/ShapeFactory.ts",
             "src/model/SvgDocument.ts",
-            "src/model/Text.ts"
+            "src/model/SvgNumber.ts",
+            "src/model/Text.ts",
+            "src/ShapeTreeFormatter.ts"
           ]
         },
         {
@@ -2492,27 +2477,11 @@
             },
             {
               "from": "src/Cli.ts",
-              "to": "src/model/Circle"
-            },
-            {
-              "from": "src/Cli.ts",
-              "to": "src/model/Ellipse"
-            },
-            {
-              "from": "src/Cli.ts",
               "to": "src/model/Group"
             },
             {
               "from": "src/Cli.ts",
-              "to": "src/model/Line"
-            },
-            {
-              "from": "src/Cli.ts",
-              "to": "src/model/Rect"
-            },
-            {
-              "from": "src/Cli.ts",
-              "to": "src/model/Shape"
+              "to": "src/model/ShapeFactory"
             },
             {
               "from": "src/Cli.ts",
@@ -2520,7 +2489,15 @@
             },
             {
               "from": "src/Cli.ts",
-              "to": "src/model/Text"
+              "to": "src/model/SvgNumber"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/CommandLineTokenizer"
+            },
+            {
+              "from": "src/Cli.ts",
+              "to": "src/ShapeTreeFormatter"
             },
             {
               "from": "src/commands/CallbackCommand.ts",
@@ -2563,8 +2540,16 @@
               "to": "src/model/Shape"
             },
             {
+              "from": "src/model/Circle.ts",
+              "to": "src/model/SvgNumber"
+            },
+            {
               "from": "src/model/Ellipse.ts",
               "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Ellipse.ts",
+              "to": "src/model/SvgNumber"
             },
             {
               "from": "src/model/Group.ts",
@@ -2579,12 +2564,48 @@
               "to": "src/model/Shape"
             },
             {
+              "from": "src/model/Line.ts",
+              "to": "src/model/SvgNumber"
+            },
+            {
               "from": "src/model/Rect.ts",
               "to": "src/model/Shape"
             },
             {
+              "from": "src/model/Rect.ts",
+              "to": "src/model/SvgNumber"
+            },
+            {
               "from": "src/model/Shape.ts",
               "to": "src/model/Group"
+            },
+            {
+              "from": "src/model/ShapeFactory.ts",
+              "to": "src/model/Circle"
+            },
+            {
+              "from": "src/model/ShapeFactory.ts",
+              "to": "src/model/Ellipse"
+            },
+            {
+              "from": "src/model/ShapeFactory.ts",
+              "to": "src/model/Group"
+            },
+            {
+              "from": "src/model/ShapeFactory.ts",
+              "to": "src/model/Line"
+            },
+            {
+              "from": "src/model/ShapeFactory.ts",
+              "to": "src/model/Rect"
+            },
+            {
+              "from": "src/model/ShapeFactory.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/ShapeFactory.ts",
+              "to": "src/model/Text"
             },
             {
               "from": "src/model/SvgDocument.ts",
@@ -2592,23 +2613,7 @@
             },
             {
               "from": "src/model/SvgDocument.ts",
-              "to": "src/model/Circle"
-            },
-            {
-              "from": "src/model/SvgDocument.ts",
-              "to": "src/model/Ellipse"
-            },
-            {
-              "from": "src/model/SvgDocument.ts",
               "to": "src/model/Group"
-            },
-            {
-              "from": "src/model/SvgDocument.ts",
-              "to": "src/model/Line"
-            },
-            {
-              "from": "src/model/SvgDocument.ts",
-              "to": "src/model/Rect"
             },
             {
               "from": "src/model/SvgDocument.ts",
@@ -2616,21 +2621,33 @@
             },
             {
               "from": "src/model/SvgDocument.ts",
-              "to": "src/model/Text"
+              "to": "src/model/ShapeFactory"
+            },
+            {
+              "from": "src/model/SvgDocument.ts",
+              "to": "src/model/SvgNumber"
             },
             {
               "from": "src/model/Text.ts",
+              "to": "src/model/Shape"
+            },
+            {
+              "from": "src/model/Text.ts",
+              "to": "src/model/SvgNumber"
+            },
+            {
+              "from": "src/ShapeTreeFormatter.ts",
               "to": "src/model/Shape"
             }
           ]
         }
       ],
-      "durationMs": 3.57
+      "durationMs": 7.88
     }
   ],
   "summary": {
-    "total": 49,
-    "passed": 41,
-    "failed": 8
+    "total": 50,
+    "passed": 50,
+    "failed": 0
   }
 }

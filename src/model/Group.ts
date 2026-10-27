@@ -15,6 +15,18 @@ export class Group extends Shape {
   move(dx: number, dy: number): void { for (const child of this.childrenRef) child.move(dx, dy); }
   scale(f: number): void { for (const child of this.childrenRef) child.scale(f); }
   geometry(): string { return ""; }
+  override treeAnnotation(): string {
+    const kind = this.getAttribute("data-kind");
+    return kind ? ` (${kind})` : "";
+  }
+  protected geometryAttributes(): readonly (readonly [string, string])[] { return []; }
+  override toSvg(indent: string): string {
+    const start = `${indent}<g${this.serializeAttributes()}`;
+    if (!this.childrenRef.length) return `${start}/>`;
+    const children = this.childrenRef.map(child => `\n${child.toSvg(`${indent}  `)}`).join("");
+    return `${start}>${children}\n${indent}</g>`;
+  }
+  loadSvgAttributes(attributes: Record<string, unknown>): void { super.importSvgAttributes(attributes, []); }
   // insert 会为克隆后的子节点建立新 parent，避免快照引用原来的图形树。
-  clone(): Group { const group = new Group(this.id); Object.assign(group.attributes, this.attributes); for (const child of this.childrenRef) group.insert(child.clone()); return group; }
+  clone(): Group { const group = this.copyAttributesTo(new Group(this.id)); for (const child of this.childrenRef) group.insert(child.clone()); return group; }
 }
